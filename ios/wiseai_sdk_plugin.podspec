@@ -13,12 +13,22 @@ A new Flutter plugin project.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files     = 'Classes/**/*'
   s.dependency 'Flutter'
+  s.dependency 'GoogleMLKit/FaceDetection', '6.0.0'
   s.platform = :ios, '13.0'
+  
+  # WiseAI SDK Framework
+  s.vendored_frameworks = 'WiseAISDK.framework'
+  s.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreML', 'Vision'
 
   # Flutter.framework does not contain a i386 slice.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
+  s.pod_target_xcconfig = { 
+    'DEFINES_MODULE' => 'YES', 
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../.symlinks/plugins/wiseai_sdk_plugin/ios $(PODS_ROOT)/../.symlinks/plugins/wiseai_sdk_plugin/ios/WiseAISDK.framework',
+    'OTHER_LDFLAGS' => '$(inherited) -framework WiseAISDK'
+  }
   s.swift_version = '5.0'
 
   # If your plugin requires a privacy manifest, for example if it uses any
