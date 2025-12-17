@@ -29,4 +29,44 @@ class WiseaiSdkPlugin {
   Future<String?> getSessionResult() {
     return WiseaiSdkPluginPlatform.instance.getSessionResult();
   }
+
+  /// Perform MyKad eKYC
+  ///
+  /// Parameters:
+  /// - [exportDoc]: Set to true to get the base64 document image (default: true)
+  /// - [exportFace]: Set to true to get the base64 face image (default: true)
+  /// - [cameraFacing]: Camera facing direction, either "FRONT" or "BACK" (default: "FRONT")
+  ///
+  /// Returns a map containing the eKYC result data
+  Future<Map<String, dynamic>> performEkyc({
+    bool exportDoc = true,
+    bool exportFace = true,
+    String cameraFacing = "FRONT",
+  }) {
+    return WiseaiSdkPluginPlatform.instance.performEkyc(
+      exportDoc: exportDoc,
+      exportFace: exportFace,
+      cameraFacing: cameraFacing,
+    );
+  }
+
+  /// Perform Passport eKYC
+  ///
+  /// Parameters:
+  /// - [exportDoc]: Set to true to get the base64 document image (default: true)
+  /// - [exportFace]: Set to true to get the base64 face image (default: true)
+  /// - [cameraFacing]: Camera facing direction, either "FRONT" or "BACK" (default: "FRONT")
+  ///
+  /// Returns a map containing the eKYC result data
+  Future<Map<String, dynamic>> performPassportEkyc({
+    bool exportDoc = true,
+    bool exportFace = true,
+    String cameraFacing = "FRONT",
+  }) {
+    return WiseaiSdkPluginPlatform.instance.performPassportEkyc(
+      exportDoc: exportDoc,
+      exportFace: exportFace,
+      cameraFacing: cameraFacing,
+    );
+  }
 }

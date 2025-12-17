@@ -2,8 +2,9 @@ import Flutter
 import UIKit
 import WiseAISDK
 
-public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
+public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
   private var wiseAiApp: WiseAiApp?
+  private var pendingResult: FlutterResult?
   
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "com.example/wiseai_sdk", binaryMessenger: registrar.messenger())
@@ -57,11 +58,12 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
       
       let withEncryption = args["withEncryption"] as? Bool ?? false
       
-      if withEncryption {
-        wiseAiApp?.startNewSessionWithEncryption()
-      } else {
-        wiseAiApp?.startNewSession()
-      }
+      wiseAiApp?.startNewSession()
+      // if withEncryption {
+      //   wiseAiApp?.startNewSessionWithEncryption()
+      // } else {
+      //   wiseAiApp?.startNewSession()
+      // }
       
       // Return success immediately - actual session result will be available later
       result("Session started")
@@ -71,8 +73,98 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
       // This is a placeholder - actual implementation depends on how results are stored
       result("iOS result retrieval needs delegate implementation")
       
+    case "performEkyc":
+      guard let args = call.arguments as? [String: Any] else {
+        result(FlutterError(code: "ARG_ERROR",
+                           message: "Arguments are required",
+                           details: nil))
+        return
+      }
+      
+      let exportDoc = args["exportDoc"] as? Bool ?? true
+      let exportFace = args["exportFace"] as? Bool ?? true
+      let cameraFacing = args["cameraFacing"] as? String ?? "FRONT"
+      
+      guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
+        result(FlutterError(code: "NO_VIEW_CONTROLLER",
+                           message: "Could not find root view controller",
+                           details: nil))
+        return
+      }
+      
+      pendingResult = result
+      wiseAiApp?.delegate = self
+      wiseAiApp?.performEkyc(withExportDoc: exportDoc, 
+                            andExportFace: exportFace, 
+                            andCameraFacing: cameraFacing)
+      
+    case "performPassportEkyc":
+      guard let args = call.arguments as? [String: Any] else {
+        result(FlutterError(code: "ARG_ERROR",
+                           message: "Arguments are required",
+                           details: nil))
+        return
+      }
+      
+      let exportDoc = args["exportDoc"] as? Bool ?? true
+      let exportFace = args["exportFace"] as? Bool ?? true
+      let cameraFacing = args["cameraFacing"] as? String ?? "FRONT"
+      
+      guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
+        result(FlutterError(code: "NO_VIEW_CONTROLLER",
+                           message: "Could not find root view controller",
+                           details: nil))
+        return
+      }
+      
+      pendingResult = result
+      wiseAiApp?.delegate = self
+      wiseAiApp?.performPassportEkyc(withExportDoc: exportDoc,
+                                     andExportFace: exportFace,
+                                     andCameraFacing: cameraFacing)
+      
     default:
       result(FlutterMethodNotImplemented)
     }
+  }
+  
+  // MARK: - WiseAIAppDelegate Methods
+  
+  public func onEkycComplete(_ jsonResult: String) {
+    guard let pendingResult = self.pendingResult else { return }
+    
+    // Parse JSON string to dictionary
+    if let data = jsonResult.data(using: .utf8),
+       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+      pendingResult(json)
+    } else {
+      // If parsing fails, return the raw string
+      pendingResult(["result": jsonResult])
+    }
+    
+    self.pendingResult = nil
+  }
+  
+  public func onEkycException(_ jsonResult: String) {
+    guard let pendingResult = self.pendingResult else { return }
+    
+    pendingResult(FlutterError(code: "EKYC_FAILED",
+                               message: "eKYC process failed",
+                               details: jsonResult))
+    self.pendingResult = nil
+  }
+  
+  public func onEkycCancelled() {
+    guard let pendingResult = self.pendingResult else { return }
+    
+    pendingResult(FlutterError(code: "USER_CANCELLED",
+                               message: "User cancelled eKYC process",
+                               details: nil))
+    self.pendingResult = nil
+  }
+  
+  public func getSessionIdAndEncryptionConfig(_ sessionIDandConfig: String) {
+    // This delegate method is called after startNewSession
+    // Store if needed, or pass to Flutter if you want to expose it
   }
 }

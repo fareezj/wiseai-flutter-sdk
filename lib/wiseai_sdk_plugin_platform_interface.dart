@@ -42,4 +42,22 @@ abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
   Future<String?> getSessionResult() {
     throw UnimplementedError('getSessionResult() has not been implemented.');
   }
+
+  /// Perform MyKad eKYC
+  Future<Map<String, dynamic>> performEkyc({
+    bool exportDoc = true,
+    bool exportFace = true,
+    String cameraFacing = "FRONT",
+  }) {
+    throw UnimplementedError('performEkyc() has not been implemented.');
+  }
+
+  /// Perform Passport eKYC
+  Future<Map<String, dynamic>> performPassportEkyc({
+    bool exportDoc = true,
+    bool exportFace = true,
+    String cameraFacing = "FRONT",
+  }) {
+    throw UnimplementedError('performPassportEkyc() has not been implemented.');
+  }
 }

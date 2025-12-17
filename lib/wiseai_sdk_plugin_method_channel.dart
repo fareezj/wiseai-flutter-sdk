@@ -48,4 +48,32 @@ class MethodChannelWiseaiSdkPlugin extends WiseaiSdkPluginPlatform {
     final result = await methodChannel.invokeMethod<String>('getSessionResult');
     return result;
   }
+
+  @override
+  Future<Map<String, dynamic>> performEkyc({
+    bool exportDoc = true,
+    bool exportFace = true,
+    String cameraFacing = "FRONT",
+  }) async {
+    final result = await methodChannel.invokeMethod('performEkyc', {
+      'exportDoc': exportDoc,
+      'exportFace': exportFace,
+      'cameraFacing': cameraFacing,
+    });
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  @override
+  Future<Map<String, dynamic>> performPassportEkyc({
+    bool exportDoc = true,
+    bool exportFace = true,
+    String cameraFacing = "FRONT",
+  }) async {
+    final result = await methodChannel.invokeMethod('performPassportEkyc', {
+      'exportDoc': exportDoc,
+      'exportFace': exportFace,
+      'cameraFacing': cameraFacing,
+    });
+    return Map<String, dynamic>.from(result as Map);
+  }
 }

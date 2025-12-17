@@ -51,7 +51,8 @@ class _MyAppState extends State<MyApp> {
 
     // Initialize
     await plugin.initSDK(
-      clientId: '',
+      clientId:
+          'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ3aXNlYWkiLCJzdWIiOiJ3aXNlYWktYXBpIiwiaWQiOiIzNzIiLCJubSI6Ik15S2FkIGVLWUMiLCJtaXNjIjoiIiwidmVyIjozfQ.fVufFcKGWzfrpIz2QJZMIQ0qXqwlw_IjJpnYz5c4jkU',
       baseUrl: 'https://wiseconsole-demo.wiseai.tech/',
     );
 
@@ -62,9 +63,32 @@ class _MyAppState extends State<MyApp> {
     final sessionData = await plugin.startNewSession(withEncryption: true);
 
     // Get result
-    final result = await plugin.getSessionResult();
+    // Start a new session
+    await plugin.startNewSession();
 
-    print('WISEAI RESULT: $result');
+    // Perform MyKad eKYC
+    try {
+      final result = await plugin.performEkyc(
+        exportDoc: true,
+        exportFace: true,
+        cameraFacing: "FRONT",
+      );
+      print('eKYC Result: $result');
+    } catch (e) {
+      print('eKYC Error: $e');
+    }
+
+    // Or perform Passport eKYC
+    // try {
+    //   final result = await plugin.performPassportEkyc(
+    //     exportDoc: true,
+    //     exportFace: true,
+    //     cameraFacing: "FRONT",
+    //   );
+    //   print('Passport eKYC Result: $result');
+    // } catch (e) {
+    //   print('Passport eKYC Error: $e');
+    // }
   }
 
   @override
