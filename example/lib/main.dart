@@ -51,7 +51,8 @@ class _MyAppState extends State<MyApp> {
 
     // Initialize
     await plugin.initSDK(
-      clientId: '',
+      clientId:
+          'eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ3aXNlYWkiLCJzdWIiOiJ3aXNlYWktYXBpIiwiaWQiOiIzNzIiLCJubSI6Ik15S2FkIGVLWUMiLCJtaXNjIjoiIiwidmVyIjozfQ.fVufFcKGWzfrpIz2QJZMIQ0qXqwlw_IjJpnYz5c4jkU',
       baseUrl: 'https://wiseconsole-demo.wiseai.tech/',
     );
 
