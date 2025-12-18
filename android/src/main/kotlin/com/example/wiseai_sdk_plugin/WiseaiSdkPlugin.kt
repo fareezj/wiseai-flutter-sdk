@@ -9,6 +9,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -165,9 +166,8 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
             val currentActivity = activity
             
             try {
-                // Create Intent for eKYC using class name
-                val intent = Intent()
-                intent.setClassName(currentActivity!!, "com.wiseai.ekyc110.Ekyc")
+                // Create Intent for eKYC - activity is in SDK but runs in app's context
+                val intent = Intent(currentActivity, Class.forName("com.wiseai.ekyc110.ekyc.Ekyc"))
                 
                 // Set configurations
                 intent.putExtra("COUNTRY_CODE", "MYS")
@@ -182,7 +182,7 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 WiseAiApp.startNewSession(object : SessionCallback {
                     override fun onComplete(data: Any?) {
                         Log.d("WiseaiPlugin", "Session started for eKYC")
-                        currentActivity.startActivityForResult(intent, REQUEST_CODE_EKYC)
+                        currentActivity?.startActivityForResult(intent, REQUEST_CODE_EKYC)
                     }
                     
                     override fun onError(error: String?) {
@@ -216,9 +216,8 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
             val currentActivity = activity
             
             try {
-                // Create Intent for Passport NFC eKYC using class name
-                val intent = Intent()
-                intent.setClassName(currentActivity!!, "com.wiseai.ekyc110.PassportNFCEkyc")
+                // Create Intent for Passport NFC eKYC - activity is in SDK but runs in app's context
+                val intent = Intent(currentActivity, Class.forName("com.wiseai.ekyc110.ekyc.PassportNFCEkyc"))
                 
                 // Set configurations
                 intent.putExtra("TIMEOUT_PERIOD", 15)
@@ -230,7 +229,7 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 WiseAiApp.startNewSession(object : SessionCallback {
                     override fun onComplete(data: Any?) {
                         Log.d("WiseaiPlugin", "Session started for passport eKYC")
-                        currentActivity.startActivityForResult(intent, REQUEST_CODE_PASSPORT_EKYC)
+                        currentActivity?.startActivityForResult(intent, REQUEST_CODE_PASSPORT_EKYC)
                     }
                     
                     override fun onError(error: String?) {
