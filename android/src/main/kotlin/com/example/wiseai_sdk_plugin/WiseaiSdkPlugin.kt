@@ -179,7 +179,7 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 intent.putExtra("LANGUAGE_CODE", "en")
                 
                 // Start session and launch eKYC
-                WiseAiApp.startNewSession(object : SessionCallback {
+                WiseAiApp.startNewSession(true, object : SessionCallback {
                     override fun onComplete(data: Any?) {
                         Log.d("WiseaiPlugin", "Session started for eKYC")
                         currentActivity?.startActivityForResult(intent, REQUEST_CODE_EKYC)
