@@ -13,12 +13,16 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.util.Base64
 import com.wiseai.ekyc110.WiseAiApp
 import com.wiseai.ekyc110.helper.SessionCallback
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import org.json.JSONObject
 import org.json.JSONArray
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 /** WiseaiSdkPlugin */
 class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
@@ -29,6 +33,14 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
   private var activity: Activity? = null
   private var pendingResult: Result? = null
   private val gson = Gson()
+  
+  // Encryption key storage
+  private var encryptionSessionId: String? = null
+  private var encryptionAlgorithm: String? = null
+  private var encryptionMode: String? = null
+  private var encryptionPadding: String? = null
+  private var encryptionIv: String? = null
+  private var encryptionKey: String? = null
   
   companion object {
     private const val REQUEST_CODE_EKYC = 1001
@@ -182,6 +194,22 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 WiseAiApp.startNewSession(true, object : SessionCallback {
                     override fun onComplete(data: Any?) {
                         Log.d("WiseaiPlugin", "Session started for eKYC")
+                        Log.d("WiseaiPlugin", "Encryption keys: $data")
+                        
+                        // Store encryption keys for manual encryption
+                        try {
+                            val encryptionKeys = JsonParser.parseString(data.toString()).asJsonObject
+                            encryptionSessionId = encryptionKeys.get("sessionId").asString
+                            encryptionAlgorithm = encryptionKeys.get("alg").asString
+                            encryptionMode = encryptionKeys.get("mode").asString
+                            encryptionPadding = encryptionKeys.get("padding").asString
+                            encryptionIv = encryptionKeys.get("iv").asString
+                            encryptionKey = encryptionKeys.get("key").asString
+                            Log.d("WiseaiPlugin", "Keys stored for session: $encryptionSessionId")
+                        } catch (e: Exception) {
+                            Log.e("WiseaiPlugin", "Failed to parse keys: ${e.message}")
+                        }
+                        
                         currentActivity?.startActivityForResult(intent, REQUEST_CODE_EKYC)
                     }
                     
@@ -253,6 +281,36 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
   
   // --- Helper Methods ---
   
+  private fun encryptString(
+      plainText: String,
+      key: String,
+      initVector: String,
+      padding: String,
+      mode: String,
+      algorithm: String
+  ): String {
+      val iv = IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT))
+      
+      var effectiveAlgorithm = if (algorithm == "AES256") "AES" else algorithm
+      val sKeySpec = SecretKeySpec(Base64.decode(key, Base64.DEFAULT), effectiveAlgorithm)
+      
+      val transformation = "$effectiveAlgorithm/$mode/$padding"
+      val cipher = Cipher.getInstance(transformation)
+      cipher.init(Cipher.ENCRYPT_MODE, sKeySpec, iv)
+      
+      val encrypted = cipher.doFinal(plainText.toByteArray(Charsets.UTF_8))
+      return Base64.encodeToString(encrypted, Base64.NO_WRAP)
+  }
+  
+  private fun clearEncryptionKeys() {
+      encryptionSessionId = null
+      encryptionAlgorithm = null
+      encryptionMode = null
+      encryptionPadding = null
+      encryptionIv = null
+      encryptionKey = null
+  }
+  
   private fun jsonToMap(json: JSONObject): Map<String, Any?> {
       val map = mutableMapOf<String, Any?>()
       val keys = json.keys()
@@ -306,8 +364,43 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                           val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
                           pendingResult?.error(code, message, null)
                       } else {
-                          // Convert to map and return success
-                          val resultMap = jsonToMap(jsonOrgObject)
+                          // Convert to map
+                          val resultMap = jsonToMap(jsonOrgObject).toMutableMap()
+                          
+                          // Manually encrypt the result if we have encryption keys
+                          if (encryptionKey != null && encryptionIv != null && 
+                              encryptionPadding != null && encryptionMode != null && 
+                              encryptionAlgorithm != null) {
+                              
+                              try {
+                                  Log.d("WiseaiPlugin", "Encrypting result...")
+                                  val encryptedText = encryptString(
+                                      resultString,
+                                      encryptionKey!!,
+                                      encryptionIv!!,
+                                      encryptionPadding!!,
+                                      encryptionMode!!,
+                                      encryptionAlgorithm!!
+                                  )
+                                  
+                                  Log.d("WiseaiPlugin", "Encryption successful")
+                                  Log.d("WiseaiPlugin", "Encrypted data: ${encryptedText.take(50)}...")
+                                  
+                                  // Add both encrypted and decrypted (plain) text
+                                  resultMap["encryptedKYC"] = encryptedText
+                                  resultMap["decryptedKYC"] = resultString
+                                  resultMap["sessionId"] = encryptionSessionId
+                                  
+                                  // Clear encryption keys after use
+                                  clearEncryptionKeys()
+                              } catch (e: Exception) {
+                                  Log.e("WiseaiPlugin", "Encryption failed: ${e.message}", e)
+                                  // Continue without encrypted version
+                              }
+                          } else {
+                              Log.w("WiseaiPlugin", "No encryption keys, returning unencrypted only")
+                          }
+                          
                           pendingResult?.success(resultMap)
                       }
                   } catch (e: Exception) {
