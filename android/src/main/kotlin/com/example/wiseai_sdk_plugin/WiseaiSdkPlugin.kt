@@ -389,7 +389,17 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                                   // Add both encrypted and decrypted (plain) text
                                   resultMap["encryptedKYC"] = encryptedText
                                   resultMap["decryptedKYC"] = resultString
-                                  resultMap["sessionId"] = encryptionSessionId
+                                  
+                                  // Add encryption data for user
+                                  val encryptionData = mapOf(
+                                      "sessionId" to encryptionSessionId,
+                                      "alg" to encryptionAlgorithm,
+                                      "mode" to encryptionMode,
+                                      "padding" to encryptionPadding,
+                                      "iv" to encryptionIv,
+                                      "key" to encryptionKey
+                                  )
+                                  resultMap["encryptionData"] = encryptionData
                                   
                                   // Clear encryption keys after use
                                   clearEncryptionKeys()
