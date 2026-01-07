@@ -58,8 +58,8 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       
       let withEncryption = args["withEncryption"] as? Bool ?? false
 
-      wiseAiApp?.startNewSessionWithEncryption()
-      // wiseAiApp?.startNewSession()
+      //wiseAiApp?.startNewSessionWithEncryption()
+      wiseAiApp?.startNewSession()
       // if withEncryption {
       //   wiseAiApp?.startNewSessionWithEncryption()
       // } else {
