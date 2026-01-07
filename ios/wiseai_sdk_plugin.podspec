@@ -15,7 +15,7 @@ A new Flutter plugin project.
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'GoogleMLKit/FaceDetection', '6.0.0'
+  s.dependency 'GoogleMLKit/FaceDetection', '~> 7.0'
   s.platform = :ios, '13.0'
   
   # WiseAI SDK Framework
