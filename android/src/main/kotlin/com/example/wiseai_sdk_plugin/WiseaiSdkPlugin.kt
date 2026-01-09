@@ -200,19 +200,8 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 intent.putExtra("QUALITY_MODE", "HYBRID")
                 intent.putExtra("LANGUAGE_CODE", "en")
                 
-                // Start session and launch eKYC
-                WiseAiApp.startNewSession(true, object : SessionCallback {
-                    override fun onComplete(data: Any?) {
-                        Log.d("WiseaiPlugin", "Session started for eKYC")
-                        currentActivity?.startActivityForResult(intent, REQUEST_CODE_EKYC)
-                    }
-                    
-                    override fun onError(error: String?) {
-                        Log.e("WiseaiPlugin", "Session start failed: $error")
-                        pendingResult?.error("SESSION_FAILED", "Failed to start session: $error", null)
-                        pendingResult = null
-                    }
-                })
+                // Launch eKYC (session must already be started via startNewSession)
+                currentActivity?.startActivityForResult(intent, REQUEST_CODE_EKYC)
             } catch (e: Exception) {
                 Log.e("WiseaiPlugin", "eKYC exception: ${e.message}", e)
                 result.error("EKYC_ERROR", "Failed to start eKYC: ${e.message}", null)
@@ -247,19 +236,8 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 intent.putExtra("QUALITY_MODE", "HYBRID")
                 intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", true)
                 
-                // Start session and launch passport eKYC
-                WiseAiApp.startNewSession(object : SessionCallback {
-                    override fun onComplete(data: Any?) {
-                        Log.d("WiseaiPlugin", "Session started for passport eKYC")
-                        currentActivity?.startActivityForResult(intent, REQUEST_CODE_PASSPORT_EKYC)
-                    }
-                    
-                    override fun onError(error: String?) {
-                        Log.e("WiseaiPlugin", "Session start failed: $error")
-                        pendingResult?.error("SESSION_FAILED", "Failed to start session: $error", null)
-                        pendingResult = null
-                    }
-                })
+                // Launch passport eKYC (session must already be started via startNewSession)
+                currentActivity?.startActivityForResult(intent, REQUEST_CODE_PASSPORT_EKYC)
             } catch (e: Exception) {
                 Log.e("WiseaiPlugin", "Passport eKYC exception: ${e.message}", e)
                 result.error("EKYC_ERROR", "Failed to start passport eKYC: ${e.message}", null)
