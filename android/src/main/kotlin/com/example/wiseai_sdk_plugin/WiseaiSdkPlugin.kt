@@ -127,9 +127,31 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                     // var1 should be the JSON String/Object containing session keys
                     Log.d("WiseaiPlugin", "Session onComplete: $var1")
                     
-                    // The native code automatically calls WiseAiApp.setKeys(var1.toString()) inside
-                    // the encrypted startNewSession, so we just return the raw result.
-                    result.success(var1.toString()) 
+                    try {
+                        val dataString = var1.toString()
+                        
+                        // Parse the response to extract sessionId
+                        if (withEncryption && dataString.isNotEmpty()) {
+                            val jsonObject = JsonParser.parseString(dataString).asJsonObject
+                            val sessionId = if (jsonObject.has("sessionId")) {
+                                jsonObject.get("sessionId").asString
+                            } else null
+                            
+                            // Return structured response with explicit sessionId
+                            val response = mapOf(
+                                "sessionId" to sessionId,
+                                "fullData" to dataString
+                            )
+                            result.success(response)
+                        } else {
+                            // For non-encrypted sessions, just return the raw data
+                            result.success(mapOf("fullData" to dataString))
+                        }
+                    } catch (e: Exception) {
+                        Log.e("WiseaiPlugin", "Error parsing session data: ${e.message}", e)
+                        // Fallback: return raw data if parsing fails
+                        result.success(mapOf("fullData" to var1.toString()))
+                    }
                 }
 
                 override fun onError(var1: String?) {

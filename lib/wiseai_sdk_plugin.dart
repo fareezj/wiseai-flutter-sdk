@@ -19,7 +19,11 @@ class WiseaiSdkPlugin {
   }
 
   /// Start a new session with optional encryption
-  Future<String?> startNewSession({bool withEncryption = false}) {
+  ///
+  /// Returns a Map containing:
+  /// - 'sessionId': The session ID (String, or null if not available)
+  /// - 'fullData': The complete JSON response as a string
+  Future<Map<String, dynamic>?> startNewSession({bool withEncryption = false}) {
     return WiseaiSdkPluginPlatform.instance.startNewSession(
       withEncryption: withEncryption,
     );

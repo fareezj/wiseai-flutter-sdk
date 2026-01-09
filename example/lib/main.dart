@@ -58,17 +58,28 @@ class _MyAppState extends State<MyApp> {
     // Set language
     await plugin.setLanguageCode('en');
 
-    // Start session
-    await plugin.startNewSession(withEncryption: false);
+    // Start session and get sessionID
+    final sessionResponse = await plugin.startNewSession(withEncryption: true);
+
+    if (sessionResponse != null) {
+      print('Session ID: ${sessionResponse['sessionId']}');
+      print('Full Data: ${sessionResponse['fullData']}');
+    }
 
     // Perform MyKad eKYC
     try {
       final result = await plugin.performEkyc(
-        exportDoc: true,
-        exportFace: true,
+        exportDoc: false,
+        exportFace: false,
         cameraFacing: "FRONT",
       );
       print('eKYC Result: $result');
+
+      // Check if result contains encrypted data
+      if (result.containsKey('encryptedResult')) {
+        print('Encrypted Result: ${result['encryptedResult']}');
+        print('Session ID from result: ${result['sessionId']}');
+      }
     } catch (e) {
       print('eKYC Error: $e');
     }

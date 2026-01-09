@@ -36,11 +36,13 @@ class MethodChannelWiseaiSdkPlugin extends WiseaiSdkPluginPlatform {
   }
 
   @override
-  Future<String?> startNewSession({bool withEncryption = false}) async {
-    final result = await methodChannel.invokeMethod<String>('startNewSession', {
+  Future<Map<String, dynamic>?> startNewSession({
+    bool withEncryption = false,
+  }) async {
+    final result = await methodChannel.invokeMethod('startNewSession', {
       'withEncryption': withEncryption,
     });
-    return result;
+    return result != null ? Map<String, dynamic>.from(result as Map) : null;
   }
 
   @override
