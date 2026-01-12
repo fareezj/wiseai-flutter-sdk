@@ -130,8 +130,8 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                     try {
                         val dataString = var1.toString()
                         
-                        // Parse the response to extract sessionId
-                        if (withEncryption && dataString.isNotEmpty()) {
+                        // Parse the response to extract sessionId (regardless of encryption)
+                        if (dataString.isNotEmpty()) {
                             val jsonObject = JsonParser.parseString(dataString).asJsonObject
                             val sessionId = if (jsonObject.has("sessionId")) {
                                 jsonObject.get("sessionId").asString
@@ -144,7 +144,7 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                             )
                             result.success(response)
                         } else {
-                            // For non-encrypted sessions, just return the raw data
+                            // Fallback for empty response
                             result.success(mapOf("fullData" to dataString))
                         }
                     } catch (e: Exception) {
