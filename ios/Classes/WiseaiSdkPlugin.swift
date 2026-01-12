@@ -51,15 +51,15 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       
     case "startNewSession":
       // Store the result to return it when delegate callback is triggered
-      pendingSessionResult = result
-      wiseAiApp?.delegate = self
+      // pendingSessionResult = result
+      // wiseAiApp?.delegate = self
       wiseAiApp?.startNewSession()
       // Result will be returned in getSessionIdAndEncryptionConfig delegate method
       
     case "startNewSessionWithEncryption":
       // Store the result to return it when delegate callback is triggered
-      pendingSessionResult = result
-      wiseAiApp?.delegate = self
+      // pendingSessionResult = result
+      // wiseAiApp?.delegate = self
       wiseAiApp?.startNewSessionWithEncryption()
       // Result will be returned in getSessionIdAndEncryptionConfig delegate method
       
