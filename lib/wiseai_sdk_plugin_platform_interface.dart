@@ -35,7 +35,7 @@ abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
     throw UnimplementedError('setLanguageCode() has not been implemented.');
   }
 
-  Future<String?> startNewSession({bool withEncryption = false}) {
+  Future<Map<String, dynamic>?> startNewSession({bool withEncryption = false}) {
     throw UnimplementedError('startNewSession() has not been implemented.');
   }
 
@@ -59,5 +59,21 @@ abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
     String cameraFacing = "FRONT",
   }) {
     throw UnimplementedError('performPassportEkyc() has not been implemented.');
+  }
+
+  /// Decrypt encrypted result from WiseAI SDK
+  ///
+  /// Parameters:
+  /// - [encryptedJson]: The encrypted JSON string result
+  /// - [encryptionConfig]: The encryption configuration as JSON string
+  ///
+  /// Returns a map containing:
+  /// - 'encryptedResult': The original encrypted result
+  /// - 'decryptedResult': The decrypted result
+  Future<Map<String, dynamic>> decryptResult({
+    required String encryptedJson,
+    required String encryptionConfig,
+  }) {
+    throw UnimplementedError('decryptResult() has not been implemented.');
   }
 }

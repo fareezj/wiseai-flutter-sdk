@@ -19,7 +19,12 @@ class WiseaiSdkPlugin {
   }
 
   /// Start a new session with optional encryption
-  Future<String?> startNewSession({bool withEncryption = false}) {
+  ///
+  /// Returns a Map containing:
+  /// - 'sessionId': The session ID (String)
+  /// - 'fullData': The complete JSON response as a string
+  /// - 'encryptionConfig': The encryption configuration (if withEncryption is true)
+  Future<Map<String, dynamic>?> startNewSession({bool withEncryption = false}) {
     return WiseaiSdkPluginPlatform.instance.startNewSession(
       withEncryption: withEncryption,
     );
@@ -67,6 +72,43 @@ class WiseaiSdkPlugin {
       exportDoc: exportDoc,
       exportFace: exportFace,
       cameraFacing: cameraFacing,
+    );
+  }
+
+  /// Decrypt encrypted result from WiseAI SDK
+  ///
+  /// This method decrypts an encrypted JSON result using the provided encryption configuration.
+  /// Use this after receiving an encrypted result from the SDK (e.g., from startNewSessionWithEncryption).
+  ///
+  /// Parameters:
+  /// - [encryptedJson]: The encrypted JSON string result from the SDK
+  /// - [encryptionConfig]: The encryption configuration as JSON string (obtained from startNewSessionWithEncryption)
+  ///
+  /// Returns a map containing both encrypted and decrypted results:
+  /// - 'encryptedResult': The original encrypted result
+  /// - 'decryptedResult': The decrypted result as a JSON string
+  ///
+  /// Example:
+  /// ```dart
+  /// final sessionData = await wiseaiSdkPlugin.startNewSessionWithEncryption();
+  /// final encryptionConfig = sessionData['encryptionConfig'];
+  ///
+  /// // After performing eKYC and getting encrypted result
+  /// final result = await wiseaiSdkPlugin.decryptResult(
+  ///   encryptedJson: encryptedResult,
+  ///   encryptionConfig: encryptionConfig,
+  /// );
+  ///
+  /// print('Encrypted: ${result['encryptedResult']}');
+  /// print('Decrypted: ${result['decryptedResult']}');
+  /// ```
+  Future<Map<String, dynamic>> decryptResult({
+    required String encryptedJson,
+    required String encryptionConfig,
+  }) {
+    return WiseaiSdkPluginPlatform.instance.decryptResult(
+      encryptedJson: encryptedJson,
+      encryptionConfig: encryptionConfig,
     );
   }
 }
