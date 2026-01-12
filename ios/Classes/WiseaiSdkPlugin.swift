@@ -50,25 +50,17 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       result(nil)
       
     case "startNewSession":
-      guard let args = call.arguments as? [String: Any] else {
-        result(FlutterError(code: "ARG_ERROR",
-                           message: "Arguments are required",
-                           details: nil))
-        return
-      }
-      
-      let withEncryption = args["withEncryption"] as? Bool ?? false
-
       // Store the result to return it when delegate callback is triggered
       pendingSessionResult = result
       wiseAiApp?.delegate = self
+      wiseAiApp?.startNewSession()
+      // Result will be returned in getSessionIdAndEncryptionConfig delegate method
       
-      if withEncryption {
-        wiseAiApp?.startNewSessionWithEncryption()
-      } else {
-        wiseAiApp?.startNewSession()
-      }
-      
+    case "startNewSessionWithEncryption":
+      // Store the result to return it when delegate callback is triggered
+      pendingSessionResult = result
+      wiseAiApp?.delegate = self
+      wiseAiApp?.startNewSessionWithEncryption()
       // Result will be returned in getSessionIdAndEncryptionConfig delegate method
       
     case "getSessionResult":

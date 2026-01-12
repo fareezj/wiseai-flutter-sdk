@@ -117,11 +117,8 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
         }
 
         "startNewSession" -> {
-            // Retrieve arguments
-            val withEncryption = call.argument<Boolean>("withEncryption") ?: false
-
             // IMPORTANT: Bridge the native asynchronous SessionCallback to the Flutter Result
-            WiseAiApp.startNewSession(withEncryption, object : SessionCallback {
+            WiseAiApp.startNewSession(false, object : SessionCallback {
                 override fun onComplete(var1: Any?) {
                     // This is called when the session request succeeds
                     // var1 should be the JSON String/Object containing session keys
@@ -130,7 +127,7 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                     try {
                         val dataString = var1.toString()
                         
-                        // Parse the response to extract sessionId (regardless of encryption)
+                        // Parse the response to extract sessionId
                         if (dataString.isNotEmpty()) {
                             val jsonObject = JsonParser.parseString(dataString).asJsonObject
                             val sessionId = if (jsonObject.has("sessionId")) {
@@ -157,6 +154,51 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 override fun onError(var1: String?) {
                     // This is called when the session request fails
                     Log.e("WiseaiPlugin", "Session onError: $var1")
+                    result.error("SESSION_FAILED", "WiseAI Session Error: $var1", null)
+                }
+            })
+            // NOTE: We do NOT call result.success() here, as the result is returned later
+            // inside the onComplete/onError methods of the SessionCallback.
+        }
+        
+        "startNewSessionWithEncryption" -> {
+            // IMPORTANT: Bridge the native asynchronous SessionCallback to the Flutter Result
+            WiseAiApp.startNewSession(true, object : SessionCallback {
+                override fun onComplete(var1: Any?) {
+                    // This is called when the session request succeeds
+                    // var1 should be the JSON String/Object containing session keys
+                    Log.d("WiseaiPlugin", "Session with encryption onComplete: $var1")
+                    
+                    try {
+                        val dataString = var1.toString()
+                        
+                        // Parse the response to extract sessionId and encryption config
+                        if (dataString.isNotEmpty()) {
+                            val jsonObject = JsonParser.parseString(dataString).asJsonObject
+                            val sessionId = if (jsonObject.has("sessionId")) {
+                                jsonObject.get("sessionId").asString
+                            } else null
+                            
+                            // Return structured response with explicit sessionId
+                            val response = mapOf(
+                                "sessionId" to sessionId,
+                                "fullData" to dataString
+                            )
+                            result.success(response)
+                        } else {
+                            // Fallback for empty response
+                            result.success(mapOf("fullData" to dataString))
+                        }
+                    } catch (e: Exception) {
+                        Log.e("WiseaiPlugin", "Error parsing session data: ${e.message}", e)
+                        // Fallback: return raw data if parsing fails
+                        result.success(mapOf("fullData" to var1.toString()))
+                    }
+                }
+
+                override fun onError(var1: String?) {
+                    // This is called when the session request fails
+                    Log.e("WiseaiPlugin", "Session with encryption onError: $var1")
                     result.error("SESSION_FAILED", "WiseAI Session Error: $var1", null)
                 }
             })

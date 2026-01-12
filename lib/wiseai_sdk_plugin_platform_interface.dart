@@ -35,8 +35,14 @@ abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
     throw UnimplementedError('setLanguageCode() has not been implemented.');
   }
 
-  Future<Map<String, dynamic>?> startNewSession({bool withEncryption = false}) {
+  Future<Map<String, dynamic>?> startNewSession() {
     throw UnimplementedError('startNewSession() has not been implemented.');
+  }
+
+  Future<Map<String, dynamic>?> startNewSessionWithEncryption() {
+    throw UnimplementedError(
+      'startNewSessionWithEncryption() has not been implemented.',
+    );
   }
 
   Future<String?> getSessionResult() {
