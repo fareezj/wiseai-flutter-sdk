@@ -18,11 +18,22 @@ class WiseaiSdkPlugin {
     return WiseaiSdkPluginPlatform.instance.setLanguageCode(languageCode);
   }
 
-  /// Start a new session with optional encryption
-  Future<String?> startNewSession({bool withEncryption = false}) {
-    return WiseaiSdkPluginPlatform.instance.startNewSession(
-      withEncryption: withEncryption,
-    );
+  /// Start a new session without encryption
+  ///
+  /// Returns a Map containing:
+  /// - 'sessionId': The session ID (String, or null if not available)
+  /// - 'fullData': The complete JSON response as a string
+  Future<Map<String, dynamic>?> startNewSession() {
+    return WiseaiSdkPluginPlatform.instance.startNewSession();
+  }
+
+  /// Start a new session with encryption
+  ///
+  /// Returns a Map containing:
+  /// - 'sessionId': The session ID (String, or null if not available)
+  /// - 'fullData': The complete JSON response as a string
+  Future<Map<String, dynamic>?> startNewSessionWithEncryption() {
+    return WiseaiSdkPluginPlatform.instance.startNewSessionWithEncryption();
   }
 
   /// Get the final session result

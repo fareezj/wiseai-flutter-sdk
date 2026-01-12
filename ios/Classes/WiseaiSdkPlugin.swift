@@ -5,6 +5,7 @@ import WiseAISDK
 public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
   private var wiseAiApp: WiseAiApp?
   private var pendingResult: FlutterResult?
+  private var pendingSessionResult: FlutterResult?
   
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "com.example/wiseai_sdk", binaryMessenger: registrar.messenger())
@@ -49,25 +50,18 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       result(nil)
       
     case "startNewSession":
-      guard let args = call.arguments as? [String: Any] else {
-        result(FlutterError(code: "ARG_ERROR",
-                           message: "Arguments are required",
-                           details: nil))
-        return
-      }
-      
-      let withEncryption = args["withEncryption"] as? Bool ?? false
-
-      //wiseAiApp?.startNewSessionWithEncryption()
+      // Store the result to return it when delegate callback is triggered
+      pendingSessionResult = result
+      wiseAiApp?.delegate = self
       wiseAiApp?.startNewSession()
-      // if withEncryption {
-      //   wiseAiApp?.startNewSessionWithEncryption()
-      // } else {
-      //   wiseAiApp?.startNewSession()
-      // }
+      // Result will be returned in getSessionIdAndEncryptionConfig delegate method
       
-      // Return success immediately - actual session result will be available later
-      result("Session started")
+    case "startNewSessionWithEncryption":
+      // Store the result to return it when delegate callback is triggered
+      pendingSessionResult = result
+      wiseAiApp?.delegate = self
+      wiseAiApp?.startNewSessionWithEncryption()
+      // Result will be returned in getSessionIdAndEncryptionConfig delegate method
       
     case "getSessionResult":
       // Note: In iOS SDK, results are typically obtained through delegate callbacks
@@ -166,6 +160,24 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
   
   public func getSessionIdAndEncryptionConfig(_ sessionIDandConfig: String) {
     // This delegate method is called after startNewSession
-    // Store if needed, or pass to Flutter if you want to expose it
+    guard let pendingResult = self.pendingSessionResult else { return }
+    
+    // Parse the session data to extract sessionId
+    if let data = sessionIDandConfig.data(using: .utf8),
+       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+       let sessionId = json["sessionId"] as? String {
+      // Return structured response with explicit sessionId (matching Android format)
+      pendingResult([
+        "sessionId": sessionId,
+        "fullData": sessionIDandConfig
+      ])
+    } else {
+      // Fallback: return raw data if parsing fails
+      pendingResult([
+        "fullData": sessionIDandConfig
+      ])
+    }
+    
+    self.pendingSessionResult = nil
   }
 }
