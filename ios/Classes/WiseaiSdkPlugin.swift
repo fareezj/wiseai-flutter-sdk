@@ -64,7 +64,7 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       wiseAiApp?.delegate = self
       
       if withEncryption {
-        wiseAiApp?.startNewSessionWithEncryption()
+        wiseAiApp?.startNewSession()
       } else {
         wiseAiApp?.startNewSession()
       }
