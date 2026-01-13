@@ -63,13 +63,11 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       pendingSessionResult = result
       wiseAiApp?.delegate = self
       
-      wiseAiApp?.startNewSession()
-
-      // if withEncryption {
-      //   wiseAiApp?.startNewSessionWithEncryption()
-      // } else {
-      //   wiseAiApp?.startNewSession()
-      // }
+      if withEncryption {
+        wiseAiApp?.startNewSessionWithEncryption()
+      } else {
+        wiseAiApp?.startNewSession()
+      }
       // Result will be returned in getSessionIdAndEncryptionConfig delegate method
       
     case "getSessionResult":
