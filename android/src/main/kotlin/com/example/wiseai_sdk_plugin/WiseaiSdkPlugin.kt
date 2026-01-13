@@ -29,6 +29,7 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
   private var activity: Activity? = null
   private var pendingResult: Result? = null
   private val gson = Gson()
+  private var encryptionConfig: JSONObject? = null // Store encryption config for auto-decryption
   
   companion object {
     private const val REQUEST_CODE_EKYC = 1001
@@ -127,6 +128,16 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                     // var1 should be the JSON String/Object containing session keys
                     Log.d("WiseaiPlugin", "Session onComplete: $var1")
                     
+                    // Store encryption config if present for auto-decryption
+                    try {
+                        val sessionData = JSONObject(var1.toString())
+                        if (sessionData.has("encryptionConfig")) {
+                            encryptionConfig = sessionData.getJSONObject("encryptionConfig")
+                        }
+                    } catch (e: Exception) {
+                        Log.w("WiseaiPlugin", "Could not parse encryption config: ${e.message}")
+                    }
+                    
                     // The native code automatically calls WiseAiApp.setKeys(var1.toString()) inside
                     // the encrypted startNewSession, so we just return the raw result.
                     result.success(var1.toString()) 
@@ -140,6 +151,32 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
             })
             // NOTE: We do NOT call result.success() here, as the result is returned later
             // inside the onComplete/onError methods of the SessionCallback.
+        }
+        
+        "startNewSessionWithEncryption" -> {
+            // Convenience method that always uses encryption
+            WiseAiApp.startNewSession(true, object : SessionCallback {
+                override fun onComplete(var1: Any?) {
+                    Log.d("WiseaiPlugin", "Encrypted session onComplete: $var1")
+                    
+                    // Store encryption config for auto-decryption
+                    try {
+                        val sessionData = JSONObject(var1.toString())
+                        if (sessionData.has("encryptionConfig")) {
+                            encryptionConfig = sessionData.getJSONObject("encryptionConfig")
+                        }
+                    } catch (e: Exception) {
+                        Log.w("WiseaiPlugin", "Could not parse encryption config: ${e.message}")
+                    }
+                    
+                    result.success(var1.toString())
+                }
+
+                override fun onError(var1: String?) {
+                    Log.e("WiseaiPlugin", "Encrypted session onError: $var1")
+                    result.error("SESSION_FAILED", "WiseAI Session Error: $var1", null)
+                }
+            })
         }
         
         "getSessionResult" -> {
@@ -276,9 +313,24 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                       val resultString = WiseAiApp.getResult()
                       Log.d("WiseaiPlugin", "eKYC result: $resultString")
                       
+                      // If we have encryption config, decrypt the result automatically
+                      val finalResultString = if (encryptionConfig != null) {
+                          try {
+                              // Decrypt using WiseAI SDK's decryption method
+                              val decryptedResult = WiseAiApp.decryptResult(resultString, encryptionConfig)
+                              Log.d("WiseaiPlugin", "Decrypted result: $decryptedResult")
+                              decryptedResult ?: resultString
+                          } catch (e: Exception) {
+                              Log.e("WiseaiPlugin", "Decryption failed: ${e.message}", e)
+                              resultString // Fallback to encrypted result if decryption fails
+                          }
+                      } else {
+                          resultString // No encryption, use result as-is
+                      }
+                      
                       // Parse result
-                      val jsonObject = JsonParser.parseString(resultString).asJsonObject
-                      val jsonOrgObject = JSONObject(resultString)
+                      val jsonObject = JsonParser.parseString(finalResultString).asJsonObject
+                      val jsonOrgObject = JSONObject(finalResultString)
                       
                       // Check for errors
                       if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {

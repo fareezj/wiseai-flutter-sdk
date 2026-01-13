@@ -30,6 +30,34 @@ class WiseaiSdkPlugin {
     );
   }
 
+  /// Start a new session with encryption enabled
+  ///
+  /// This is a convenience method equivalent to calling:
+  /// ```dart
+  /// startNewSession(withEncryption: true)
+  /// ```
+  ///
+  /// Returns a Map containing:
+  /// - 'sessionId': The session ID (String)
+  /// - 'encryptionConfig': The encryption configuration (String)
+  /// - 'fullData': The complete JSON response as a string
+  ///
+  /// Example:
+  /// ```dart
+  /// final sessionData = await wiseaiSdkPlugin.startNewSessionWithEncryption();
+  /// final sessionId = sessionData['sessionId'];
+  /// final encryptionConfig = sessionData['encryptionConfig'];
+  ///
+  /// // Later, decrypt results using the encryption config
+  /// final decrypted = await wiseaiSdkPlugin.decryptResult(
+  ///   encryptedJson: encryptedResult,
+  ///   encryptionConfig: encryptionConfig,
+  /// );
+  /// ```
+  Future<Map<String, dynamic>?> startNewSessionWithEncryption() {
+    return WiseaiSdkPluginPlatform.instance.startNewSessionWithEncryption();
+  }
+
   /// Get the final session result
   Future<String?> getSessionResult() {
     return WiseaiSdkPluginPlatform.instance.getSessionResult();

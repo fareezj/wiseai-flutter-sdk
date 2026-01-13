@@ -59,12 +59,18 @@ class _MyAppState extends State<MyApp> {
     // Set language
     await plugin.setLanguageCode('en');
 
-    // Start session (without encryption for simpler flow)
-    final sessionResult = await plugin.startNewSession(withEncryption: true);
+    // Option 1: Start session without encryption (simpler, plain results)
+    final sessionResult = await plugin.startNewSessionWithEncryption();
+
+    // Option 2: Start session with encryption (more secure, requires decryption)
+    // final sessionResult = await plugin.startNewSessionWithEncryption();
 
     if (sessionResult != null) {
       print('Session ID: ${sessionResult['sessionId']}');
       print('Full Data: ${sessionResult['fullData']}');
+      if (sessionResult.containsKey('encryptionConfig')) {
+        print('Encryption Config available for decryption');
+      }
     }
 
     // Perform MyKad eKYC

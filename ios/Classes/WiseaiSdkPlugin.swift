@@ -6,6 +6,7 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
   private var wiseAiApp: WiseAiApp?
   private var pendingResult: FlutterResult?
   private var pendingSessionResult: FlutterResult?
+  private var encryptionConfig: [String: Any]? // Store encryption config for auto-decryption
   
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "com.example/wiseai_sdk", binaryMessenger: registrar.messenger())
@@ -64,10 +65,17 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       wiseAiApp?.delegate = self
       
       if withEncryption {
-        wiseAiApp?.startNewSession()
+        wiseAiApp?.startNewSessionWithEncryption()
       } else {
         wiseAiApp?.startNewSession()
       }
+      // Result will be returned in getSessionIdAndEncryptionConfig delegate method
+      
+    case "startNewSessionWithEncryption":
+      // Store the result to return it when delegate callback is triggered
+      pendingSessionResult = result
+      wiseAiApp?.delegate = self
+      wiseAiApp?.startNewSessionWithEncryption()
       // Result will be returned in getSessionIdAndEncryptionConfig delegate method
       
     case "getSessionResult":
@@ -171,13 +179,30 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
   public func onEkycComplete(_ jsonResult: String) {
     guard let pendingResult = self.pendingResult else { return }
     
-    // Parse JSON string to dictionary
-    if let data = jsonResult.data(using: .utf8),
-       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-      pendingResult(json)
+    // If we have encryption config, decrypt the result automatically
+    if let encryptionConfig = self.encryptionConfig,
+       let wiseAiApp = self.wiseAiApp {
+      
+      // Decrypt the encrypted result
+      let decryptedResult = wiseAiApp.decryptResult(jsonResult, withConfiguration: encryptionConfig)
+      
+      // Parse the decrypted JSON string to dictionary
+      if let data = decryptedResult.data(using: .utf8),
+         let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+        pendingResult(json)
+      } else {
+        // Fallback: return the raw decrypted string if parsing fails
+        pendingResult(["result": decryptedResult])
+      }
     } else {
-      // If parsing fails, return the raw string
-      pendingResult(["result": jsonResult])
+      // No encryption - parse JSON string to dictionary directly
+      if let data = jsonResult.data(using: .utf8),
+         let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+        pendingResult(json)
+      } else {
+        // If parsing fails, return the raw string
+        pendingResult(["result": jsonResult])
+      }
     }
     
     self.pendingResult = nil
@@ -205,10 +230,16 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
     // This delegate method is called after startNewSession
     guard let pendingResult = self.pendingSessionResult else { return }
     
-    // Parse the session data to extract sessionId
+    // Parse the session data to extract sessionId and encryption config
     if let data = sessionIDandConfig.data(using: .utf8),
        let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
        let sessionId = json["sessionId"] as? String {
+      
+      // Store encryption config if present for auto-decryption
+      if let config = json["encryptionConfig"] as? [String: Any] {
+        self.encryptionConfig = config
+      }
+      
       // Return structured response with explicit sessionId (matching Android format)
       pendingResult([
         "sessionId": sessionId,

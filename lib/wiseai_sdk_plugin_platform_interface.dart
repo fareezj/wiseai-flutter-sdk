@@ -39,6 +39,18 @@ abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
     throw UnimplementedError('startNewSession() has not been implemented.');
   }
 
+  /// Start a new session with encryption
+  ///
+  /// Returns a Map containing:
+  /// - 'sessionId': The session ID (String)
+  /// - 'encryptionConfig': The encryption configuration (String)
+  /// - 'fullData': The complete JSON response as a string
+  Future<Map<String, dynamic>?> startNewSessionWithEncryption() {
+    throw UnimplementedError(
+      'startNewSessionWithEncryption() has not been implemented.',
+    );
+  }
+
   Future<String?> getSessionResult() {
     throw UnimplementedError('getSessionResult() has not been implemented.');
   }
