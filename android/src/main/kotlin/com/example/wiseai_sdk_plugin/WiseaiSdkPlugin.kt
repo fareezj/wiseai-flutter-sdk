@@ -262,6 +262,41 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
             }
         }
         
+        "decryptResult" -> {
+            // Get arguments
+            val encryptedJson = call.argument<String>("encryptedJson")
+            val encryptionConfigJson = call.argument<String>("encryptionConfig")
+            
+            if (encryptedJson.isNullOrEmpty() || encryptionConfigJson.isNullOrEmpty()) {
+                result.error("ARG_ERROR", "encryptedJson and encryptionConfig are required", null)
+                return
+            }
+            
+            // Check if SDK is initialized
+            if (wiseAiAppInstance == null) {
+                result.error("SDK_NOT_INITIALIZED", "WiseAI SDK not initialized. Call initSDK first.", null)
+                return
+            }
+            
+            try {
+                // Parse encryption config from JSON string to JSONObject
+                val configObject = JSONObject(encryptionConfigJson)
+                
+                // Perform decryption using the SDK's decryptResult method
+                val decryptedResult = WiseAiApp.decryptResult(encryptedJson, configObject)
+                
+                // Return both encrypted and decrypted results
+                val resultMap = mapOf(
+                    "encryptedResult" to encryptedJson,
+                    "decryptedResult" to (decryptedResult ?: "")
+                )
+                result.success(resultMap)
+            } catch (e: Exception) {
+                Log.e("WiseaiPlugin", "Decryption failed: ${e.message}", e)
+                result.error("DECRYPTION_ERROR", "Failed to decrypt result: ${e.message}", null)
+            }
+        }
+        
         else -> {
             result.notImplemented()
         }
