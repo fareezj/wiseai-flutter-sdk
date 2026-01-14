@@ -19,6 +19,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import org.json.JSONObject
 import org.json.JSONArray
+import android.util.Base64
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 /** WiseaiSdkPlugin */
 class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
@@ -128,19 +132,24 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                     // var1 should be the JSON String/Object containing session keys
                     Log.d("WiseaiPlugin", "Session onComplete: $var1")
                     
-                    // Store encryption config if present for auto-decryption
                     try {
                         val sessionData = JSONObject(var1.toString())
-                        if (sessionData.has("encryptionConfig")) {
-                            encryptionConfig = sessionData.getJSONObject("encryptionConfig")
+                        
+                        // Store encryption config if present for auto-decryption
+                        // The encryption params are at the root level when encryption is enabled
+                        if (withEncryption && sessionData.has("key")) {
+                            encryptionConfig = sessionData
                         }
+                        
+                        // Convert entire JSON to map for Flutter
+                        val resultMap = jsonToMap(sessionData)
+                        
+                        result.success(resultMap)
                     } catch (e: Exception) {
-                        Log.w("WiseaiPlugin", "Could not parse encryption config: ${e.message}")
+                        Log.e("WiseaiPlugin", "Could not parse session data: ${e.message}", e)
+                        // Fallback: return raw data wrapped in map
+                        result.success(mapOf("fullData" to var1.toString()))
                     }
-                    
-                    // The native code automatically calls WiseAiApp.setKeys(var1.toString()) inside
-                    // the encrypted startNewSession, so we just return the raw result.
-                    result.success(var1.toString()) 
                 }
 
                 override fun onError(var1: String?) {
@@ -159,17 +168,23 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 override fun onComplete(var1: Any?) {
                     Log.d("WiseaiPlugin", "Encrypted session onComplete: $var1")
                     
-                    // Store encryption config for auto-decryption
                     try {
                         val sessionData = JSONObject(var1.toString())
-                        if (sessionData.has("encryptionConfig")) {
-                            encryptionConfig = sessionData.getJSONObject("encryptionConfig")
-                        }
+                        val sessionId = sessionData.getString("sessionId")
+                        
+                        // Store encryption config for auto-decryption
+                        // The encryption params are at the root level, not nested
+                        encryptionConfig = sessionData
+                        
+                        // Convert entire JSON to map for Flutter
+                        val resultMap = jsonToMap(sessionData)
+                        
+                        result.success(resultMap)
                     } catch (e: Exception) {
-                        Log.w("WiseaiPlugin", "Could not parse encryption config: ${e.message}")
+                        Log.e("WiseaiPlugin", "Could not parse session data: ${e.message}", e)
+                        // Fallback: return raw data wrapped in map
+                        result.success(mapOf("fullData" to var1.toString()))
                     }
-                    
-                    result.success(var1.toString())
                 }
 
                 override fun onError(var1: String?) {
@@ -282,13 +297,20 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 // Parse encryption config from JSON string to JSONObject
                 val configObject = JSONObject(encryptionConfigJson)
                 
-                // Perform decryption using the SDK's decryptResult method
-                val decryptedResult = WiseAiApp.decryptResult(encryptedJson, configObject)
+                // Extract decryption parameters from config
+                val key = configObject.getString("key")
+                val initVector = configObject.getString("iv")
+                val padding = configObject.getString("padding")
+                val mode = configObject.getString("mode")
+                var algorithm = configObject.getString("alg")
+                
+                // Perform decryption using the decryptString method
+                val decryptedResult = decryptString(encryptedJson, key, initVector, padding, mode, algorithm)
                 
                 // Return both encrypted and decrypted results
                 val resultMap = mapOf(
                     "encryptedResult" to encryptedJson,
-                    "decryptedResult" to (decryptedResult ?: "")
+                    "decryptedResult" to decryptedResult
                 )
                 result.success(resultMap)
             } catch (e: Exception) {
@@ -351,10 +373,17 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                       // If we have encryption config, decrypt the result automatically
                       val finalResultString = if (encryptionConfig != null) {
                           try {
-                              // Decrypt using WiseAI SDK's decryption method
-                              val decryptedResult = WiseAiApp.decryptResult(resultString, encryptionConfig)
+                              // Extract decryption parameters from stored encryption config
+                              val key = encryptionConfig!!.getString("key")
+                              val initVector = encryptionConfig!!.getString("iv")
+                              val padding = encryptionConfig!!.getString("padding")
+                              val mode = encryptionConfig!!.getString("mode")
+                              val algorithm = encryptionConfig!!.getString("alg")
+                              
+                              // Decrypt using the decryptString method
+                              val decryptedResult = decryptString(resultString, key, initVector, padding, mode, algorithm)
                               Log.d("WiseaiPlugin", "Decrypted result: $decryptedResult")
-                              decryptedResult ?: resultString
+                              decryptedResult
                           } catch (e: Exception) {
                               Log.e("WiseaiPlugin", "Decryption failed: ${e.message}", e)
                               resultString // Fallback to encrypted result if decryption fails
@@ -397,5 +426,54 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
           }
       }
       return false
+  }
+  
+  // --- Decryption Helper Method ---
+  
+  /**
+   * Decrypts an encrypted string using AES encryption with the provided parameters.
+   * This method follows the WiseAI SDK documentation for manual decryption.
+   * 
+   * @param encryptedText The Base64 encoded encrypted text
+   * @param key The Base64 encoded encryption key
+   * @param initVector The Base64 encoded initialization vector (IV)
+   * @param padding The padding mode (e.g., "PKCS5Padding")
+   * @param mode The cipher mode (e.g., "CBC")
+   * @param algorithm The encryption algorithm (e.g., "AES256" or "AES")
+   * @return The decrypted string
+   * @throws Exception if decryption fails
+   */
+  private fun decryptString(
+      encryptedText: String,
+      key: String,
+      initVector: String,
+      padding: String,
+      mode: String,
+      algorithm: String
+  ): String {
+      // Create IV parameter spec from Base64 decoded init vector
+      val iv = IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT))
+      
+      // Handle AES256 algorithm name - convert to standard "AES"
+      var actualAlgorithm = algorithm
+      if (algorithm == "AES256") {
+          actualAlgorithm = "AES"
+      }
+      
+      // Create secret key spec from Base64 decoded key
+      val sKeySpec = SecretKeySpec(Base64.decode(key, Base64.DEFAULT), actualAlgorithm)
+      
+      // Create transformation string (e.g., "AES/CBC/PKCS5Padding")
+      val transformation = "$actualAlgorithm/$mode/$padding"
+      
+      // Initialize cipher for decryption
+      val cipher = Cipher.getInstance(transformation)
+      cipher.init(Cipher.DECRYPT_MODE, sKeySpec, iv)
+      
+      // Decrypt the Base64 decoded encrypted text
+      val original = cipher.doFinal(Base64.decode(encryptedText, Base64.DEFAULT))
+      
+      // Return decrypted string in UTF-8 encoding
+      return String(original, Charsets.UTF_8)
   }
 }
