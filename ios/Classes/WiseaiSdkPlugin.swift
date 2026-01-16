@@ -186,14 +186,19 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       // Decrypt the encrypted result
       let decryptedResult = wiseAiApp.decryptResult(jsonResult, withConfiguration: encryptionConfig)
       
-      // Parse the decrypted JSON string to dictionary
+      // Return both encrypted and decrypted results
+      var response: [String: Any] = [
+        "encryptedResult": jsonResult,
+        "decryptedResult": decryptedResult
+      ]
+      
+      // Also parse the decrypted JSON if possible for convenience
       if let data = decryptedResult.data(using: .utf8),
          let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-        pendingResult(json)
-      } else {
-        // Fallback: return the raw decrypted string if parsing fails
-        pendingResult(["result": decryptedResult])
+        response["decryptedData"] = json
       }
+      
+      pendingResult(response)
     } else {
       // No encryption - parse JSON string to dictionary directly
       if let data = jsonResult.data(using: .utf8),

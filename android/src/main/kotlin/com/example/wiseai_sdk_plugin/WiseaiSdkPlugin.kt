@@ -371,7 +371,7 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                       Log.d("WiseaiPlugin", "eKYC result: $resultString")
                       
                       // If we have encryption config, decrypt the result automatically
-                      val finalResultString = if (encryptionConfig != null) {
+                      if (encryptionConfig != null) {
                           try {
                               // Extract decryption parameters from stored encryption config
                               val key = encryptionConfig!!.getString("key")
@@ -383,28 +383,47 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                               // Decrypt using the decryptString method
                               val decryptedResult = decryptString(resultString, key, initVector, padding, mode, algorithm)
                               Log.d("WiseaiPlugin", "Decrypted result: $decryptedResult")
-                              decryptedResult
+                              
+                              // Parse the decrypted result
+                              val jsonObject = JsonParser.parseString(decryptedResult).asJsonObject
+                              val jsonOrgObject = JSONObject(decryptedResult)
+                              
+                              // Check for errors
+                              if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {
+                                  val code = if (jsonObject.has("code")) jsonObject.get("code").asString else "UNKNOWN"
+                                  val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
+                                  pendingResult?.error(code, message, null)
+                              } else {
+                                  // Return both encrypted and decrypted results
+                                  val resultMap = mutableMapOf<String, Any?>(
+                                      "encryptedResult" to resultString,
+                                      "decryptedResult" to decryptedResult
+                                  )
+                                  
+                                  // Also include parsed decrypted data for convenience
+                                  resultMap["decryptedData"] = jsonToMap(jsonOrgObject)
+                                  
+                                  pendingResult?.success(resultMap)
+                              }
                           } catch (e: Exception) {
                               Log.e("WiseaiPlugin", "Decryption failed: ${e.message}", e)
-                              resultString // Fallback to encrypted result if decryption fails
+                              pendingResult?.error("DECRYPTION_ERROR", "Failed to decrypt result: ${e.message}", null)
                           }
                       } else {
-                          resultString // No encryption, use result as-is
-                      }
-                      
-                      // Parse result
-                      val jsonObject = JsonParser.parseString(finalResultString).asJsonObject
-                      val jsonOrgObject = JSONObject(finalResultString)
-                      
-                      // Check for errors
-                      if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {
-                          val code = if (jsonObject.has("code")) jsonObject.get("code").asString else "UNKNOWN"
-                          val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
-                          pendingResult?.error(code, message, null)
-                      } else {
-                          // Convert to map and return success
-                          val resultMap = jsonToMap(jsonOrgObject)
-                          pendingResult?.success(resultMap)
+                          // No encryption - parse result as-is
+                          val jsonObject = JsonParser.parseString(resultString).asJsonObject
+                          val jsonOrgObject = JSONObject(resultString)
+                          
+                          // Check for errors
+                          if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {
+                              val code = if (jsonObject.has("code")) jsonObject.get("code").asString else "UNKNOWN"
+                              val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
+                              pendingResult?.error(code, message, null)
+                          } else {
+                              // Convert to map and return success
+                              val resultMap = jsonToMap(jsonOrgObject)
+                              pendingResult?.success(resultMap)
+                          }
                       }
                   } catch (e: Exception) {
                       Log.e("WiseaiPlugin", "Error parsing result: ${e.message}", e)
