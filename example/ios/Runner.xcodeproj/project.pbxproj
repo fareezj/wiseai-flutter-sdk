@@ -28,19 +28,6 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
@@ -64,6 +51,9 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		999FE2BACEB8A0D585E68E36 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		A0957C6F33FE6B78C5C80927 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
+		C88064F62F1F0EFF00592AE1 /* WiseAISDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WiseAISDK.framework; path = ../../../../../Downloads/WiseAISDK.framework; sourceTree = "<group>"; };
+		C88064FC2F1F105C00592AE1 /* DecodeJPEG2000objc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DecodeJPEG2000objc.framework; sourceTree = "<group>"; };
+		C88064FD2F1F105C00592AE1 /* OpenSSL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OpenSSL.framework; sourceTree = "<group>"; };
 		DF8B32F5BEDC14311D6ABF7C /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -142,6 +132,16 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
+		C88064FE2F1F105C00592AE1 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				C88064FC2F1F105C00592AE1 /* DecodeJPEG2000objc.framework */,
+				C88064FD2F1F105C00592AE1 /* OpenSSL.framework */,
+			);
+			name = Helper;
+			path = ../../../../../Downloads/Helper;
+			sourceTree = "<group>";
+		};
 		F28E6F358EF10A7F65300EDE /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -152,13 +152,14 @@
 				A0957C6F33FE6B78C5C80927 /* Pods-RunnerTests.release.xcconfig */,
 				29B07A3ED5941AD6B4DCF800 /* Pods-RunnerTests.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
 		FF1A680C2754D82DA89B4986 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C88064FE2F1F105C00592AE1 /* Helper */,
+				C88064F62F1F0EFF00592AE1 /* WiseAISDK.framework */,
 				7933ED367F54CE714FACE3FE /* Pods_Runner.framework */,
 				DF8B32F5BEDC14311D6ABF7C /* Pods_RunnerTests.framework */,
 			);
@@ -196,7 +197,6 @@
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
-				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				0F68E3D8B1A0D5CD38F8575C /* [CP] Embed Pods Frameworks */,
 				C271B5EB792ED0EF11472CDC /* [CP] Copy Pods Resources */,

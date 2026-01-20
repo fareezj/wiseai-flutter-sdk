@@ -1,0 +1,6 @@
+framework module DecodeJPEG2000objc {
+  umbrella header "DecodeJPEG2000objc.h"
+  export *
+
+  module * { export * }
+}

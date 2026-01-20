@@ -99,7 +99,7 @@ SPEC CHECKSUMS:
   MLKitVision: e858c5f125ecc288e4a31127928301eaba9ae0c1
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  wiseai_sdk_plugin: 9d97f942146546f80cd3dd9cfc3ee30095311717
+  wiseai_sdk_plugin: 5adeae5e86f56ee92e1aa4c22acf219f009a615f
 
 PODFILE CHECKSUM: 471863e501c096b89efeb20d7e2e920e11370bd8
 

@@ -2,15 +2,44 @@ import Flutter
 import UIKit
 import WiseAISDK
 
-public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
+// Private delegate handler to avoid exposing WiseAiDelegate to Objective-C
+private class WiseAiDelegateHandler: NSObject, WiseAiDelegate {
+  weak var plugin: WiseaiSdkPlugin?
+  
+  init(plugin: WiseaiSdkPlugin) {
+    self.plugin = plugin
+    super.init()
+  }
+  
+  func onEkycComplete(_ jsonResult: String) {
+    plugin?.handleEkycComplete(jsonResult)
+  }
+  
+  func onEkycException(_ jsonResult: String) {
+    plugin?.handleEkycException(jsonResult)
+  }
+  
+  func onEkycCancelled() {
+    plugin?.handleEkycCancelled()
+  }
+  
+  func getSessionIdAndEncryptionConfig(_ sessionIDandConfig: String) {
+    plugin?.handleSessionIdAndEncryptionConfig(sessionIDandConfig)
+  }
+}
+
+@objc(WiseaiSdkPlugin)
+public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
   private var wiseAiApp: WiseAiApp?
   private var pendingResult: FlutterResult?
   private var pendingSessionResult: FlutterResult?
   private var encryptionConfig: [String: Any]? // Store encryption config for auto-decryption
+  private var delegateHandler: WiseAiDelegateHandler?
   
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "com.example/wiseai_sdk", binaryMessenger: registrar.messenger())
     let instance = WiseaiSdkPlugin()
+    instance.delegateHandler = WiseAiDelegateHandler(plugin: instance)
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
@@ -30,7 +59,7 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       }
       
       do {
-        wiseAiApp = WiseAiApp(apiToken: clientId, andApiURL: baseUrl)
+        wiseAiApp = WiseAiApp(apiToken: clientId, apiURL: baseUrl)
         result(nil)
       } catch {
         result(FlutterError(code: "SDK_INIT_FAILED",
@@ -51,32 +80,15 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       result(nil)
       
     case "startNewSession":
-      guard let args = call.arguments as? [String: Any] else {
-        result(FlutterError(code: "ARG_ERROR",
-                           message: "Arguments are required",
-                           details: nil))
-        return
-      }
-      
-      let withEncryption = args["withEncryption"] as? Bool ?? false
-      
-      // Store the result to return it when delegate callback is triggered
-      pendingSessionResult = result
-      wiseAiApp?.delegate = self
-      
-      if withEncryption {
-        wiseAiApp?.startNewSessionWithEncryption()
-      } else {
-        wiseAiApp?.startNewSession()
-      }
-      // Result will be returned in getSessionIdAndEncryptionConfig delegate method
+      // Note: In SDK v2.0.4+, sessions are managed internally by performEkyc methods
+      // The isEncrypt flag triggers automatic session creation
+      // Return a placeholder response for backwards compatibility
+      result(["sessionId": "auto-managed", "message": "Sessions are now managed internally by the SDK"])
       
     case "startNewSessionWithEncryption":
-      // Store the result to return it when delegate callback is triggered
-      pendingSessionResult = result
-      wiseAiApp?.delegate = self
-      wiseAiApp?.startNewSessionWithEncryption()
-      // Result will be returned in getSessionIdAndEncryptionConfig delegate method
+      // Note: In SDK v2.0.4+, sessions are managed internally by performEkyc methods
+      // The isEncrypt flag triggers automatic session creation and encryption config callback
+      result(["sessionId": "auto-managed", "message": "Sessions are now managed internally by the SDK"])
       
     case "getSessionResult":
       // Note: In iOS SDK, results are typically obtained through delegate callbacks
@@ -91,9 +103,11 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
         return
       }
       
-      let exportDoc = args["exportDoc"] as? Bool ?? true
-      let exportFace = args["exportFace"] as? Bool ?? true
-      let cameraFacing = args["cameraFacing"] as? String ?? "FRONT"
+      let exportDoc = args["exportDoc"] as? Bool ?? false
+      let exportFace = args["exportFace"] as? Bool ?? false
+      let isEncrypt = args["isEncrypt"] as? Bool ?? false
+      let isQualityCheck = args["isQualityCheck"] as? Bool ?? false
+      let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
       
       guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
         result(FlutterError(code: "NO_VIEW_CONTROLLER",
@@ -103,10 +117,12 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       }
       
       pendingResult = result
-      wiseAiApp?.delegate = self
-      wiseAiApp?.performEkyc(withExportDoc: exportDoc, 
-                            andExportFace: exportFace, 
-                            andCameraFacing: cameraFacing)
+      wiseAiApp?.delegate = delegateHandler
+      wiseAiApp?.performEkyc(isQualityCheck: isQualityCheck,
+                            isEncrypt: isEncrypt,
+                            isActiveLiveness: isActiveLiveness,
+                            isExportDoc: exportDoc,
+                            isExportFace: exportFace)
       
     case "performPassportEkyc":
       guard let args = call.arguments as? [String: Any] else {
@@ -116,9 +132,11 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
         return
       }
       
-      let exportDoc = args["exportDoc"] as? Bool ?? true
-      let exportFace = args["exportFace"] as? Bool ?? true
-      let cameraFacing = args["cameraFacing"] as? String ?? "FRONT"
+      let exportDoc = args["exportDoc"] as? Bool ?? false
+      let exportFace = args["exportFace"] as? Bool ?? false
+      let isEncrypt = args["isEncrypt"] as? Bool ?? false
+      let isNFC = args["isNFC"] as? Bool ?? true
+      let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
       
       guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
         result(FlutterError(code: "NO_VIEW_CONTROLLER",
@@ -128,10 +146,43 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       }
       
       pendingResult = result
-      wiseAiApp?.delegate = self
-      wiseAiApp?.performPassportEkyc(withExportDoc: exportDoc,
-                                     andExportFace: exportFace,
-                                     andCameraFacing: cameraFacing)
+      wiseAiApp?.delegate = delegateHandler
+      wiseAiApp?.performPassportEkyc(isEncrypt: isEncrypt,
+                                     isNFC: isNFC,
+                                     isActiveLiveness: isActiveLiveness,
+                                     isExportDoc: exportDoc,
+                                     isExportFace: exportFace)
+      
+    case "performEkycForCountry":
+      guard let args = call.arguments as? [String: Any],
+            let countryCode = args["countryCode"] as? String,
+            let idType = args["idType"] as? String else {
+        result(FlutterError(code: "ARG_ERROR",
+                           message: "countryCode and idType are required",
+                           details: nil))
+        return
+      }
+      
+      let exportDoc = args["exportDoc"] as? Bool ?? false
+      let exportFace = args["exportFace"] as? Bool ?? false
+      let isEncrypt = args["isEncrypt"] as? Bool ?? false
+      let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
+      
+      guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
+        result(FlutterError(code: "NO_VIEW_CONTROLLER",
+                           message: "Could not find root view controller",
+                           details: nil))
+        return
+      }
+      
+      pendingResult = result
+      wiseAiApp?.delegate = delegateHandler
+      wiseAiApp?.performEkycForCountry(isEncrypt: isEncrypt,
+                                       countryCode: countryCode,
+                                       IDType: idType,
+                                       isActiveLiveness: isActiveLiveness,
+                                       isExportDoc: exportDoc,
+                                       isExportFace: exportFace)
       
     case "decryptResult":
       guard let args = call.arguments as? [String: Any],
@@ -160,8 +211,8 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
       }
       
       // Perform decryption using the SDK's decryptResult method
-      wiseAiApp.delegate = self
-      let decryptedResult = wiseAiApp.decryptResult(encryptedJson, withConfiguration: configDict)
+      wiseAiApp.delegate = delegateHandler
+      let decryptedResult = wiseAiApp.decryptResult(encryptedResult: encryptedJson, encryptionConfig: configDict)
       
       // Return both encrypted and decrypted results
       result([
@@ -174,9 +225,9 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
     }
   }
   
-  // MARK: - WiseAIAppDelegate Methods
+  // MARK: - Internal delegate callback handlers
   
-  public func onEkycComplete(_ jsonResult: String) {
+  func handleEkycComplete(_ jsonResult: String) {
     guard let pendingResult = self.pendingResult else { return }
     
     // If we have encryption config, decrypt the result automatically
@@ -184,16 +235,17 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
        let wiseAiApp = self.wiseAiApp {
       
       // Decrypt the encrypted result
-      let decryptedResult = wiseAiApp.decryptResult(jsonResult, withConfiguration: encryptionConfig)
+      let decryptedResult = wiseAiApp.decryptResult(encryptedResult: jsonResult, encryptionConfig: encryptionConfig)
       
       // Return both encrypted and decrypted results
       var response: [String: Any] = [
         "encryptedResult": jsonResult,
-        "decryptedResult": decryptedResult
+        "decryptedResult": decryptedResult ?? ""
       ]
       
       // Also parse the decrypted JSON if possible for convenience
-      if let data = decryptedResult.data(using: .utf8),
+      if let decryptedResult = decryptedResult,
+         let data = decryptedResult.data(using: .utf8),
          let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
         response["decryptedData"] = json
       }
@@ -213,7 +265,7 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
     self.pendingResult = nil
   }
   
-  public func onEkycException(_ jsonResult: String) {
+  func handleEkycException(_ jsonResult: String) {
     guard let pendingResult = self.pendingResult else { return }
     
     pendingResult(FlutterError(code: "EKYC_FAILED",
@@ -222,7 +274,7 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
     self.pendingResult = nil
   }
   
-  public func onEkycCancelled() {
+  func handleEkycCancelled() {
     guard let pendingResult = self.pendingResult else { return }
     
     pendingResult(FlutterError(code: "USER_CANCELLED",
@@ -231,7 +283,7 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, WiseAIAppDelegate {
     self.pendingResult = nil
   }
   
-  public func getSessionIdAndEncryptionConfig(_ sessionIDandConfig: String) {
+  func handleSessionIdAndEncryptionConfig(_ sessionIDandConfig: String) {
     // This delegate method is called after startNewSession
     guard let pendingResult = self.pendingSessionResult else { return }
     

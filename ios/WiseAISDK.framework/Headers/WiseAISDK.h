@@ -2,7 +2,7 @@
 //  WiseAISDK.h
 //  WiseAISDK
 //
-//  Created by JPCHOI on 27/02/2021.
+//  Created by Chang Fu Tong on 20/04/2024.
 //
 
 #import <Foundation/Foundation.h>
@@ -14,12 +14,4 @@ FOUNDATION_EXPORT double WiseAISDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char WiseAISDKVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <WiseAISDK/PublicHeader.h>
-#import "Ekyc.h"
-#import "MyCardOCR.h"
-#import "PassportOCR.h"
-#import "Assets.h"
-#import "WiseAiApp.h"
-#import "FaceLiveness.h"
-#import "AppLocationManager.h"
-#import "LivenessCapture.h"
 

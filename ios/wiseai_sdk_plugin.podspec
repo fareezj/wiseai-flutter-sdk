@@ -14,6 +14,7 @@ A new Flutter plugin project.
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
   s.source_files     = 'Classes/**/*'
+  s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'GoogleMLKit/FaceDetection', '6.0.0'
   s.platform = :ios, '13.0'
@@ -27,7 +28,8 @@ A new Flutter plugin project.
     'DEFINES_MODULE' => 'YES', 
     'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
     'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../.symlinks/plugins/wiseai_sdk_plugin/ios $(PODS_ROOT)/../.symlinks/plugins/wiseai_sdk_plugin/ios/WiseAISDK.framework',
-    'OTHER_LDFLAGS' => '$(inherited) -framework WiseAISDK'
+    'OTHER_LDFLAGS' => '$(inherited) -framework WiseAISDK',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../.symlinks/plugins/wiseai_sdk_plugin/ios/WiseAISDK.framework/Modules'
   }
   s.swift_version = '5.0'
 
