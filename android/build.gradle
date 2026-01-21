@@ -23,7 +23,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110")
             credentials {
                 username = "WiseAI-Tech"
-                password = "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"
+                password = "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"
             }
         }
         maven { url "https://developer.huawei.com/repo/" }
