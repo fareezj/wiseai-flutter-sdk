@@ -20,7 +20,7 @@ A new Flutter plugin project.
   s.platform = :ios, '13.0'
   
   # WiseAI SDK Framework
-  s.vendored_frameworks = 'WiseAISDK.framework'
+  s.vendored_frameworks = 'WiseAISDK.framework', 'OpenSSL.framework', 'DecodeJPEG2000objc.framework'
   s.frameworks = 'UIKit', 'Foundation', 'AVFoundation', 'CoreML', 'Vision'
 
   # Flutter.framework does not contain a i386 slice.
