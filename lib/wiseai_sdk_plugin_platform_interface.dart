@@ -57,8 +57,11 @@ abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
 
   /// Perform MyKad eKYC
   Future<Map<String, dynamic>> performEkyc({
-    bool exportDoc = true,
-    bool exportFace = true,
+    bool isQualityCheck = false,
+    bool isEncrypt = false,
+    bool isActiveLiveness = false,
+    bool isExportDoc = false,
+    bool isExportFace = false,
     String cameraFacing = "FRONT",
   }) {
     throw UnimplementedError('performEkyc() has not been implemented.');
@@ -66,8 +69,11 @@ abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
 
   /// Perform Passport eKYC
   Future<Map<String, dynamic>> performPassportEkyc({
-    bool exportDoc = true,
-    bool exportFace = true,
+    bool isEncrypt = false,
+    bool isNFC = false,
+    bool isActiveLiveness = false,
+    bool isExportDoc = false,
+    bool isExportFace = false,
     String cameraFacing = "FRONT",
   }) {
     throw UnimplementedError('performPassportEkyc() has not been implemented.');

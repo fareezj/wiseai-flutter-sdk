@@ -103,8 +103,8 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
         return
       }
       
-      let exportDoc = args["exportDoc"] as? Bool ?? false
-      let exportFace = args["exportFace"] as? Bool ?? false
+      let isExportDoc = args["isExportDoc"] as? Bool ?? false
+      let isExportFace = args["isExportFace"] as? Bool ?? false
       let isEncrypt = args["isEncrypt"] as? Bool ?? false
       let isQualityCheck = args["isQualityCheck"] as? Bool ?? false
       let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
@@ -121,8 +121,8 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
       wiseAiApp?.performEkyc(isQualityCheck: isQualityCheck,
                             isEncrypt: isEncrypt,
                             isActiveLiveness: isActiveLiveness,
-                            isExportDoc: exportDoc,
-                            isExportFace: exportFace)
+                            isExportDoc: isExportDoc,
+                            isExportFace: isExportFace)
       
     case "performPassportEkyc":
       guard let args = call.arguments as? [String: Any] else {
@@ -132,10 +132,10 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
         return
       }
       
-      let exportDoc = args["exportDoc"] as? Bool ?? false
-      let exportFace = args["exportFace"] as? Bool ?? false
+      let isExportDoc = args["isExportDoc"] as? Bool ?? false
+      let isExportFace = args["isExportFace"] as? Bool ?? false
       let isEncrypt = args["isEncrypt"] as? Bool ?? false
-      let isNFC = args["isNFC"] as? Bool ?? true
+      let isNFC = args["isNFC"] as? Bool ?? false
       let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
       
       guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
@@ -150,8 +150,8 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
       wiseAiApp?.performPassportEkyc(isEncrypt: isEncrypt,
                                      isNFC: isNFC,
                                      isActiveLiveness: isActiveLiveness,
-                                     isExportDoc: exportDoc,
-                                     isExportFace: exportFace)
+                                     isExportDoc: isExportDoc,
+                                     isExportFace: isExportFace)
       
     case "performEkycForCountry":
       guard let args = call.arguments as? [String: Any],
@@ -163,8 +163,8 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
         return
       }
       
-      let exportDoc = args["exportDoc"] as? Bool ?? false
-      let exportFace = args["exportFace"] as? Bool ?? false
+      let isExportDoc = args["isExportDoc"] as? Bool ?? false
+      let isExportFace = args["isExportFace"] as? Bool ?? false
       let isEncrypt = args["isEncrypt"] as? Bool ?? false
       let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
       
@@ -181,8 +181,8 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
                                        countryCode: countryCode,
                                        IDType: idType,
                                        isActiveLiveness: isActiveLiveness,
-                                       isExportDoc: exportDoc,
-                                       isExportFace: exportFace)
+                                       isExportDoc: isExportDoc,
+                                       isExportFace: isExportFace)
       
     case "decryptResult":
       guard let args = call.arguments as? [String: Any],

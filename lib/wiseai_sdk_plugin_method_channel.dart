@@ -61,13 +61,19 @@ class MethodChannelWiseaiSdkPlugin extends WiseaiSdkPluginPlatform {
 
   @override
   Future<Map<String, dynamic>> performEkyc({
-    bool exportDoc = true,
-    bool exportFace = true,
+    bool isQualityCheck = false,
+    bool isEncrypt = false,
+    bool isActiveLiveness = false,
+    bool isExportDoc = false,
+    bool isExportFace = false,
     String cameraFacing = "FRONT",
   }) async {
     final result = await methodChannel.invokeMethod('performEkyc', {
-      'exportDoc': exportDoc,
-      'exportFace': exportFace,
+      'isQualityCheck': isQualityCheck,
+      'isEncrypt': isEncrypt,
+      'isActiveLiveness': isActiveLiveness,
+      'isExportDoc': isExportDoc,
+      'isExportFace': isExportFace,
       'cameraFacing': cameraFacing,
     });
     return Map<String, dynamic>.from(result as Map);
@@ -75,13 +81,19 @@ class MethodChannelWiseaiSdkPlugin extends WiseaiSdkPluginPlatform {
 
   @override
   Future<Map<String, dynamic>> performPassportEkyc({
-    bool exportDoc = true,
-    bool exportFace = true,
+    bool isEncrypt = false,
+    bool isNFC = false,
+    bool isActiveLiveness = false,
+    bool isExportDoc = false,
+    bool isExportFace = false,
     String cameraFacing = "FRONT",
   }) async {
     final result = await methodChannel.invokeMethod('performPassportEkyc', {
-      'exportDoc': exportDoc,
-      'exportFace': exportFace,
+      'isEncrypt': isEncrypt,
+      'isNFC': isNFC,
+      'isActiveLiveness': isActiveLiveness,
+      'isExportDoc': isExportDoc,
+      'isExportFace': isExportFace,
       'cameraFacing': cameraFacing,
     });
     return Map<String, dynamic>.from(result as Map);

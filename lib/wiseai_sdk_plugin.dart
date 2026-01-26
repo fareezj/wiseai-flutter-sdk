@@ -66,19 +66,28 @@ class WiseaiSdkPlugin {
   /// Perform MyKad eKYC
   ///
   /// Parameters:
-  /// - [exportDoc]: Set to true to get the base64 document image (default: true)
-  /// - [exportFace]: Set to true to get the base64 face image (default: true)
+  /// - [isQualityCheck]: Enable quality check for document scanning (default: false)
+  /// - [isEncrypt]: Enable encryption for the session (default: false)
+  /// - [isActiveLiveness]: Enable active liveness detection (default: false)
+  /// - [isExportDoc]: Set to true to get the base64 document image (default: false)
+  /// - [isExportFace]: Set to true to get the base64 face image (default: false)
   /// - [cameraFacing]: Camera facing direction, either "FRONT" or "BACK" (default: "FRONT")
   ///
   /// Returns a map containing the eKYC result data
   Future<Map<String, dynamic>> performEkyc({
-    bool exportDoc = true,
-    bool exportFace = true,
+    bool isQualityCheck = false,
+    bool isEncrypt = false,
+    bool isActiveLiveness = false,
+    bool isExportDoc = false,
+    bool isExportFace = false,
     String cameraFacing = "FRONT",
   }) {
     return WiseaiSdkPluginPlatform.instance.performEkyc(
-      exportDoc: exportDoc,
-      exportFace: exportFace,
+      isQualityCheck: isQualityCheck,
+      isEncrypt: isEncrypt,
+      isActiveLiveness: isActiveLiveness,
+      isExportDoc: isExportDoc,
+      isExportFace: isExportFace,
       cameraFacing: cameraFacing,
     );
   }
@@ -86,19 +95,28 @@ class WiseaiSdkPlugin {
   /// Perform Passport eKYC
   ///
   /// Parameters:
-  /// - [exportDoc]: Set to true to get the base64 document image (default: true)
-  /// - [exportFace]: Set to true to get the base64 face image (default: true)
+  /// - [isEncrypt]: Enable encryption for the session (default: false)
+  /// - [isNFC]: Enable NFC reading for passport (default: false)
+  /// - [isActiveLiveness]: Enable active liveness detection (default: false)
+  /// - [isExportDoc]: Set to true to get the base64 document image (default: false)
+  /// - [isExportFace]: Set to true to get the base64 face image (default: false)
   /// - [cameraFacing]: Camera facing direction, either "FRONT" or "BACK" (default: "FRONT")
   ///
   /// Returns a map containing the eKYC result data
   Future<Map<String, dynamic>> performPassportEkyc({
-    bool exportDoc = true,
-    bool exportFace = true,
+    bool isEncrypt = false,
+    bool isNFC = false,
+    bool isActiveLiveness = false,
+    bool isExportDoc = false,
+    bool isExportFace = false,
     String cameraFacing = "FRONT",
   }) {
     return WiseaiSdkPluginPlatform.instance.performPassportEkyc(
-      exportDoc: exportDoc,
-      exportFace: exportFace,
+      isEncrypt: isEncrypt,
+      isNFC: isNFC,
+      isActiveLiveness: isActiveLiveness,
+      isExportDoc: isExportDoc,
+      isExportFace: isExportFace,
       cameraFacing: cameraFacing,
     );
   }

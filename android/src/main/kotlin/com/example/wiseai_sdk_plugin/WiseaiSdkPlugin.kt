@@ -207,8 +207,11 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
             }
             
             // Get parameters
-            val exportDoc = call.argument<Boolean>("exportDoc") ?: true
-            val exportFace = call.argument<Boolean>("exportFace") ?: true
+            val isQualityCheck = call.argument<Boolean>("isQualityCheck") ?: false
+            val isEncrypt = call.argument<Boolean>("isEncrypt") ?: false
+            val isActiveLiveness = call.argument<Boolean>("isActiveLiveness") ?: false
+            val isExportDoc = call.argument<Boolean>("isExportDoc") ?: false
+            val isExportFace = call.argument<Boolean>("isExportFace") ?: false
             val cameraFacing = call.argument<String>("cameraFacing") ?: "FRONT"
             
             // Store pending result
@@ -224,10 +227,11 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 // Set configurations
                 intent.putExtra("COUNTRY_CODE", "MYS")
                 intent.putExtra("ID_TYPE", "ID")
-                intent.putExtra("EXPORT_DOC", exportDoc)
-                intent.putExtra("EXPORT_FACE", exportFace)
+                intent.putExtra("EXPORT_DOC", isExportDoc)
+                intent.putExtra("EXPORT_FACE", isExportFace)
                 intent.putExtra("CAMERA_FACING", cameraFacing)
-                intent.putExtra("QUALITY_MODE", "HYBRID")
+                intent.putExtra("QUALITY_MODE", if (isQualityCheck) "HYBRID" else "NORMAL")
+                intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", isActiveLiveness)
                 intent.putExtra("LANGUAGE_CODE", "en")
                 
                 // Use existing session - user must call startNewSession before performEkyc
@@ -247,8 +251,11 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
             }
             
             // Get parameters
-            val exportDoc = call.argument<Boolean>("exportDoc") ?: true
-            val exportFace = call.argument<Boolean>("exportFace") ?: true
+            val isEncrypt = call.argument<Boolean>("isEncrypt") ?: false
+            val isNFC = call.argument<Boolean>("isNFC") ?: false
+            val isActiveLiveness = call.argument<Boolean>("isActiveLiveness") ?: false
+            val isExportDoc = call.argument<Boolean>("isExportDoc") ?: false
+            val isExportFace = call.argument<Boolean>("isExportFace") ?: false
             val cameraFacing = call.argument<String>("cameraFacing") ?: "FRONT"
             
             // Store pending result
@@ -265,7 +272,10 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 intent.putExtra("TIMEOUT_PERIOD", 15)
                 intent.putExtra("CAMERA_FACING", cameraFacing)
                 intent.putExtra("QUALITY_MODE", "HYBRID")
-                intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", true)
+                intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", isActiveLiveness)
+                intent.putExtra("EXPORT_DOC", isExportDoc)
+                intent.putExtra("EXPORT_FACE", isExportFace)
+                intent.putExtra("ENABLE_NFC", isNFC)
                 
                 // Use existing session - user must call startNewSession before performPassportEkyc
                 Log.d("WiseaiPlugin", "Launching passport eKYC with existing session")
