@@ -19,6 +19,10 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import org.json.JSONObject
 import org.json.JSONArray
+import android.util.Base64
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 /** WiseaiSdkPlugin */
 class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
@@ -29,6 +33,8 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
   private var activity: Activity? = null
   private var pendingResult: Result? = null
   private val gson = Gson()
+  private var encryptionConfig: JSONObject? = null // Store encryption config for auto-decryption
+  private var shouldEncryptCurrentOperation: Boolean = false // Track if current eKYC should use encryption
   
   companion object {
     private const val REQUEST_CODE_EKYC = 1001
@@ -117,36 +123,32 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
         }
 
         "startNewSession" -> {
+            // Retrieve arguments
+            val withEncryption = call.argument<Boolean>("withEncryption") ?: false
+
             // IMPORTANT: Bridge the native asynchronous SessionCallback to the Flutter Result
-            WiseAiApp.startNewSession(false, object : SessionCallback {
+            WiseAiApp.startNewSession(withEncryption, object : SessionCallback {
                 override fun onComplete(var1: Any?) {
                     // This is called when the session request succeeds
                     // var1 should be the JSON String/Object containing session keys
                     Log.d("WiseaiPlugin", "Session onComplete: $var1")
                     
                     try {
-                        val dataString = var1.toString()
+                        val sessionData = JSONObject(var1.toString())
                         
-                        // Parse the response to extract sessionId
-                        if (dataString.isNotEmpty()) {
-                            val jsonObject = JsonParser.parseString(dataString).asJsonObject
-                            val sessionId = if (jsonObject.has("sessionId")) {
-                                jsonObject.get("sessionId").asString
-                            } else null
-                            
-                            // Return structured response with explicit sessionId
-                            val response = mapOf(
-                                "sessionId" to sessionId,
-                                "fullData" to dataString
-                            )
-                            result.success(response)
-                        } else {
-                            // Fallback for empty response
-                            result.success(mapOf("fullData" to dataString))
+                        // Store encryption config if present for auto-decryption
+                        // The encryption params are at the root level when encryption is enabled
+                        if (withEncryption && sessionData.has("key")) {
+                            encryptionConfig = sessionData
                         }
+                        
+                        // Convert entire JSON to map for Flutter
+                        val resultMap = jsonToMap(sessionData)
+                        
+                        result.success(resultMap)
                     } catch (e: Exception) {
-                        Log.e("WiseaiPlugin", "Error parsing session data: ${e.message}", e)
-                        // Fallback: return raw data if parsing fails
+                        Log.e("WiseaiPlugin", "Could not parse session data: ${e.message}", e)
+                        // Fallback: return raw data wrapped in map
                         result.success(mapOf("fullData" to var1.toString()))
                     }
                 }
@@ -162,48 +164,35 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
         }
         
         "startNewSessionWithEncryption" -> {
-            // IMPORTANT: Bridge the native asynchronous SessionCallback to the Flutter Result
+            // Convenience method that always uses encryption
             WiseAiApp.startNewSession(true, object : SessionCallback {
                 override fun onComplete(var1: Any?) {
-                    // This is called when the session request succeeds
-                    // var1 should be the JSON String/Object containing session keys
-                    Log.d("WiseaiPlugin", "Session with encryption onComplete: $var1")
+                    Log.d("WiseaiPlugin", "Encrypted session onComplete: $var1")
                     
                     try {
-                        val dataString = var1.toString()
+                        val sessionData = JSONObject(var1.toString())
+                        val sessionId = sessionData.getString("sessionId")
                         
-                        // Parse the response to extract sessionId and encryption config
-                        if (dataString.isNotEmpty()) {
-                            val jsonObject = JsonParser.parseString(dataString).asJsonObject
-                            val sessionId = if (jsonObject.has("sessionId")) {
-                                jsonObject.get("sessionId").asString
-                            } else null
-                            
-                            // Return structured response with explicit sessionId
-                            val response = mapOf(
-                                "sessionId" to sessionId,
-                                "fullData" to dataString
-                            )
-                            result.success(response)
-                        } else {
-                            // Fallback for empty response
-                            result.success(mapOf("fullData" to dataString))
-                        }
+                        // Store encryption config for auto-decryption
+                        // The encryption params are at the root level, not nested
+                        encryptionConfig = sessionData
+                        
+                        // Convert entire JSON to map for Flutter
+                        val resultMap = jsonToMap(sessionData)
+                        
+                        result.success(resultMap)
                     } catch (e: Exception) {
-                        Log.e("WiseaiPlugin", "Error parsing session data: ${e.message}", e)
-                        // Fallback: return raw data if parsing fails
+                        Log.e("WiseaiPlugin", "Could not parse session data: ${e.message}", e)
+                        // Fallback: return raw data wrapped in map
                         result.success(mapOf("fullData" to var1.toString()))
                     }
                 }
 
                 override fun onError(var1: String?) {
-                    // This is called when the session request fails
-                    Log.e("WiseaiPlugin", "Session with encryption onError: $var1")
+                    Log.e("WiseaiPlugin", "Encrypted session onError: $var1")
                     result.error("SESSION_FAILED", "WiseAI Session Error: $var1", null)
                 }
             })
-            // NOTE: We do NOT call result.success() here, as the result is returned later
-            // inside the onComplete/onError methods of the SessionCallback.
         }
         
         "getSessionResult" -> {
@@ -219,9 +208,15 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
             }
             
             // Get parameters
-            val exportDoc = call.argument<Boolean>("exportDoc") ?: true
-            val exportFace = call.argument<Boolean>("exportFace") ?: true
+            val isQualityCheck = call.argument<Boolean>("isQualityCheck") ?: false
+            val isEncrypt = call.argument<Boolean>("isEncrypt") ?: false
+            val isActiveLiveness = call.argument<Boolean>("isActiveLiveness") ?: false
+            val isExportDoc = call.argument<Boolean>("isExportDoc") ?: false
+            val isExportFace = call.argument<Boolean>("isExportFace") ?: false
             val cameraFacing = call.argument<String>("cameraFacing") ?: "FRONT"
+            
+            // Store encryption preference for this operation
+            shouldEncryptCurrentOperation = isEncrypt
             
             // Store pending result
             pendingResult = result
@@ -236,18 +231,21 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 // Set configurations
                 intent.putExtra("COUNTRY_CODE", "MYS")
                 intent.putExtra("ID_TYPE", "ID")
-                intent.putExtra("EXPORT_DOC", exportDoc)
-                intent.putExtra("EXPORT_FACE", exportFace)
+                intent.putExtra("EXPORT_DOC", isExportDoc)
+                intent.putExtra("EXPORT_FACE", isExportFace)
                 intent.putExtra("CAMERA_FACING", cameraFacing)
-                intent.putExtra("QUALITY_MODE", "HYBRID")
+                intent.putExtra("QUALITY_MODE", if (isQualityCheck) "HYBRID" else "NORMAL")
+                intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", isActiveLiveness)
                 intent.putExtra("LANGUAGE_CODE", "en")
                 
-                // Launch eKYC (session must already be started via startNewSession)
+                // Use existing session - user must call startNewSession before performEkyc
+                Log.d("WiseaiPlugin", "Launching eKYC with existing session")
                 currentActivity?.startActivityForResult(intent, REQUEST_CODE_EKYC)
             } catch (e: Exception) {
                 Log.e("WiseaiPlugin", "eKYC exception: ${e.message}", e)
                 result.error("EKYC_ERROR", "Failed to start eKYC: ${e.message}", null)
                 pendingResult = null
+                shouldEncryptCurrentOperation = false // Reset encryption flag on error
             }
         }
         
@@ -258,9 +256,15 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
             }
             
             // Get parameters
-            val exportDoc = call.argument<Boolean>("exportDoc") ?: true
-            val exportFace = call.argument<Boolean>("exportFace") ?: true
+            val isEncrypt = call.argument<Boolean>("isEncrypt") ?: false
+            val isNFC = call.argument<Boolean>("isNFC") ?: false
+            val isActiveLiveness = call.argument<Boolean>("isActiveLiveness") ?: false
+            val isExportDoc = call.argument<Boolean>("isExportDoc") ?: false
+            val isExportFace = call.argument<Boolean>("isExportFace") ?: false
             val cameraFacing = call.argument<String>("cameraFacing") ?: "FRONT"
+            
+            // Store encryption preference for this operation
+            shouldEncryptCurrentOperation = isEncrypt
             
             // Store pending result
             pendingResult = result
@@ -276,14 +280,61 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                 intent.putExtra("TIMEOUT_PERIOD", 15)
                 intent.putExtra("CAMERA_FACING", cameraFacing)
                 intent.putExtra("QUALITY_MODE", "HYBRID")
-                intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", true)
+                intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", isActiveLiveness)
+                intent.putExtra("EXPORT_DOC", isExportDoc)
+                intent.putExtra("EXPORT_FACE", isExportFace)
+                intent.putExtra("ENABLE_NFC", isNFC)
                 
-                // Launch passport eKYC (session must already be started via startNewSession)
+                // Use existing session - user must call startNewSession before performPassportEkyc
+                Log.d("WiseaiPlugin", "Launching passport eKYC with existing session")
                 currentActivity?.startActivityForResult(intent, REQUEST_CODE_PASSPORT_EKYC)
             } catch (e: Exception) {
                 Log.e("WiseaiPlugin", "Passport eKYC exception: ${e.message}", e)
                 result.error("EKYC_ERROR", "Failed to start passport eKYC: ${e.message}", null)
                 pendingResult = null
+                shouldEncryptCurrentOperation = false // Reset encryption flag on error
+            }
+        }
+        
+        "decryptResult" -> {
+            // Get arguments
+            val encryptedJson = call.argument<String>("encryptedJson")
+            val encryptionConfigJson = call.argument<String>("encryptionConfig")
+            
+            if (encryptedJson.isNullOrEmpty() || encryptionConfigJson.isNullOrEmpty()) {
+                result.error("ARG_ERROR", "encryptedJson and encryptionConfig are required", null)
+                return
+            }
+            
+            // Check if SDK is initialized
+            if (wiseAiAppInstance == null) {
+                result.error("SDK_NOT_INITIALIZED", "WiseAI SDK not initialized. Call initSDK first.", null)
+                return
+            }
+            
+            try {
+                // Parse encryption config from JSON string to JSONObject
+                val configObject = JSONObject(encryptionConfigJson)
+                
+                // Extract decryption parameters from config
+                val key = configObject.getString("key")
+                val initVector = configObject.getString("iv")
+                val padding = configObject.getString("padding")
+                val mode = configObject.getString("mode")
+                var algorithm = configObject.getString("alg")
+                
+                // Perform decryption using the decryptString method
+                val decryptedResult = decryptString(encryptedJson, key, initVector, padding, mode, algorithm)
+                
+                // Return both encrypted and decrypted results
+                val resultMap = mapOf(
+                    "encryptedResult" to encryptedJson,
+                    "decryptedResult" to decryptedResult
+                )
+                result.success(resultMap)
+            } catch (e: Exception) {
+                Log.e("WiseaiPlugin", "Decryption failed: ${e.message}", e)
+                result.error("DECRYPTION_ERROR", "Failed to decrypt result: ${e.message}", null)
             }
         }
         
@@ -338,25 +389,67 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                       val resultString = WiseAiApp.getResult()
                       Log.d("WiseaiPlugin", "eKYC result: $resultString")
                       
-                      // Parse result
-                      val jsonObject = JsonParser.parseString(resultString).asJsonObject
-                      val jsonOrgObject = JSONObject(resultString)
-                      
-                      // Check for errors
-                      if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {
-                          val code = if (jsonObject.has("code")) jsonObject.get("code").asString else "UNKNOWN"
-                          val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
-                          pendingResult?.error(code, message, null)
+                      // If encryption is enabled for this operation AND we have encryption config, decrypt the result automatically
+                      if (shouldEncryptCurrentOperation && encryptionConfig != null) {
+                          try {
+                              // Extract decryption parameters from stored encryption config
+                              val key = encryptionConfig!!.getString("key")
+                              val initVector = encryptionConfig!!.getString("iv")
+                              val padding = encryptionConfig!!.getString("padding")
+                              val mode = encryptionConfig!!.getString("mode")
+                              val algorithm = encryptionConfig!!.getString("alg")
+                              
+                              // Decrypt using the decryptString method
+                              val decryptedResult = decryptString(resultString, key, initVector, padding, mode, algorithm)
+                              Log.d("WiseaiPlugin", "Decrypted result: $decryptedResult")
+                              
+                              // Parse the decrypted result
+                              val jsonObject = JsonParser.parseString(decryptedResult).asJsonObject
+                              val jsonOrgObject = JSONObject(decryptedResult)
+                              
+                              // Check for errors
+                              if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {
+                                  val code = if (jsonObject.has("code")) jsonObject.get("code").asString else "UNKNOWN"
+                                  val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
+                                  pendingResult?.error(code, message, null)
+                              } else {
+                                  // Return both encrypted and decrypted results
+                                  val resultMap = mutableMapOf<String, Any?>(
+                                      "encryptedResult" to resultString,
+                                      "decryptedResult" to decryptedResult
+                                  )
+                                  
+                                  // Also include parsed decrypted data for convenience
+                                  resultMap["decryptedData"] = jsonToMap(jsonOrgObject)
+                                  
+                                  pendingResult?.success(resultMap)
+                              }
+                          } catch (e: Exception) {
+                              Log.e("WiseaiPlugin", "Decryption failed: ${e.message}", e)
+                              pendingResult?.error("DECRYPTION_ERROR", "Failed to decrypt result: ${e.message}", null)
+                          }
                       } else {
-                          // Convert to map and return success
-                          val resultMap = jsonToMap(jsonOrgObject)
-                          pendingResult?.success(resultMap)
+                          // No encryption - parse result as-is
+                          val jsonObject = JsonParser.parseString(resultString).asJsonObject
+                          val jsonOrgObject = JSONObject(resultString)
+                          
+                          // Check for errors
+                          if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {
+                              val code = if (jsonObject.has("code")) jsonObject.get("code").asString else "UNKNOWN"
+                              val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
+                              pendingResult?.error(code, message, null)
+                          } else {
+                              // Convert to map and return success
+                              val resultMap = jsonToMap(jsonOrgObject)
+                              pendingResult?.success(resultMap)
+                          }
                       }
                   } catch (e: Exception) {
                       Log.e("WiseaiPlugin", "Error parsing result: ${e.message}", e)
                       pendingResult?.error("PARSE_ERROR", "Failed to parse result: ${e.message}", null)
                   } finally {
                       pendingResult = null
+                      shouldEncryptCurrentOperation = false // Reset encryption flag
                   }
               } else {
                   // Check if cancelled
@@ -367,10 +460,60 @@ class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRe
                       pendingResult?.error("UNEXPECTED_ERROR", "eKYC failed with unexpected error", null)
                   }
                   pendingResult = null
+                  shouldEncryptCurrentOperation = false // Reset encryption flag
               }
               return true
           }
       }
       return false
+  }
+  
+  // --- Decryption Helper Method ---
+  
+  /**
+   * Decrypts an encrypted string using AES encryption with the provided parameters.
+   * This method follows the WiseAI SDK documentation for manual decryption.
+   * 
+   * @param encryptedText The Base64 encoded encrypted text
+   * @param key The Base64 encoded encryption key
+   * @param initVector The Base64 encoded initialization vector (IV)
+   * @param padding The padding mode (e.g., "PKCS5Padding")
+   * @param mode The cipher mode (e.g., "CBC")
+   * @param algorithm The encryption algorithm (e.g., "AES256" or "AES")
+   * @return The decrypted string
+   * @throws Exception if decryption fails
+   */
+  private fun decryptString(
+      encryptedText: String,
+      key: String,
+      initVector: String,
+      padding: String,
+      mode: String,
+      algorithm: String
+  ): String {
+      // Create IV parameter spec from Base64 decoded init vector
+      val iv = IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT))
+      
+      // Handle AES256 algorithm name - convert to standard "AES"
+      var actualAlgorithm = algorithm
+      if (algorithm == "AES256") {
+          actualAlgorithm = "AES"
+      }
+      
+      // Create secret key spec from Base64 decoded key
+      val sKeySpec = SecretKeySpec(Base64.decode(key, Base64.DEFAULT), actualAlgorithm)
+      
+      // Create transformation string (e.g., "AES/CBC/PKCS5Padding")
+      val transformation = "$actualAlgorithm/$mode/$padding"
+      
+      // Initialize cipher for decryption
+      val cipher = Cipher.getInstance(transformation)
+      cipher.init(Cipher.DECRYPT_MODE, sKeySpec, iv)
+      
+      // Decrypt the Base64 decoded encrypted text
+      val original = cipher.doFinal(Base64.decode(encryptedText, Base64.DEFAULT))
+      
+      // Return decrypted string in UTF-8 encoding
+      return String(original, Charsets.UTF_8)
   }
 }
