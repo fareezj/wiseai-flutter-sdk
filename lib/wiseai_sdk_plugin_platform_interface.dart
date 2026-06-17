@@ -2,6 +2,16 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'wiseai_sdk_plugin_method_channel.dart';
 
+/// Platform-agnostic contract for the WiseAI SDK bridge.
+///
+/// The bridge speaks in raw event maps — one of:
+///   `{ "source": "sdk",         "rawData": <verbatim SDK JSON>, "sessionId"?: "..." }`
+///   `{ "source": "cancelled",   "rawData": "",                  "sessionId"?: "..." }`
+///   `{ "source": "bridgeError", "rawData": <message>,           "sessionId"?: "..." }`
+///
+/// Classifying these into an [EkycResult] is pure Dart logic that lives in
+/// `WiseaiSdkPlugin`, not here — this layer only carries bytes across the
+/// platform boundary.
 abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
   /// Constructs a WiseaiSdkPluginPlatform.
   WiseaiSdkPluginPlatform() : super(token: _token);
@@ -27,71 +37,28 @@ abstract class WiseaiSdkPluginPlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<void> initSDK({required String clientId, required String baseUrl}) {
-    throw UnimplementedError('initSDK() has not been implemented.');
+  /// Stream of raw bridge events emitted by the native side.
+  Stream<Map<String, dynamic>> get bridgeEvents {
+    throw UnimplementedError('bridgeEvents has not been implemented.');
   }
 
-  Future<void> setLanguageCode(String languageCode) {
-    throw UnimplementedError('setLanguageCode() has not been implemented.');
+  /// Start a MyKad eKYC flow. Fire-and-forget — the result arrives later on
+  /// [bridgeEvents].
+  Future<void> performMykadEkyc(Map<String, dynamic> args) {
+    throw UnimplementedError('performMykadEkyc() has not been implemented.');
   }
 
-  Future<Map<String, dynamic>?> startNewSession({bool withEncryption = false}) {
-    throw UnimplementedError('startNewSession() has not been implemented.');
-  }
-
-  /// Start a new session with encryption
-  ///
-  /// Returns a Map containing:
-  /// - 'sessionId': The session ID (String)
-  /// - 'encryptionConfig': The encryption configuration (String)
-  /// - 'fullData': The complete JSON response as a string
-  Future<Map<String, dynamic>?> startNewSessionWithEncryption() {
+  /// Start a Passport (optionally NFC) eKYC flow. Fire-and-forget — the
+  /// result arrives later on [bridgeEvents].
+  Future<void> performPassportNFCEkyc(Map<String, dynamic> args) {
     throw UnimplementedError(
-      'startNewSessionWithEncryption() has not been implemented.',
+      'performPassportNFCEkyc() has not been implemented.',
     );
   }
 
-  Future<String?> getSessionResult() {
-    throw UnimplementedError('getSessionResult() has not been implemented.');
-  }
-
-  /// Perform MyKad eKYC
-  Future<Map<String, dynamic>> performEkyc({
-    bool isQualityCheck = false,
-    bool isEncrypt = false,
-    bool isActiveLiveness = false,
-    bool isExportDoc = false,
-    bool isExportFace = false,
-    String cameraFacing = "FRONT",
-  }) {
-    throw UnimplementedError('performEkyc() has not been implemented.');
-  }
-
-  /// Perform Passport eKYC
-  Future<Map<String, dynamic>> performPassportEkyc({
-    bool isEncrypt = false,
-    bool isNFC = false,
-    bool isActiveLiveness = false,
-    bool isExportDoc = false,
-    bool isExportFace = false,
-    String cameraFacing = "FRONT",
-  }) {
-    throw UnimplementedError('performPassportEkyc() has not been implemented.');
-  }
-
-  /// Decrypt encrypted result from WiseAI SDK
-  ///
-  /// Parameters:
-  /// - [encryptedJson]: The encrypted JSON string result
-  /// - [encryptionConfig]: The encryption configuration as JSON string
-  ///
-  /// Returns a map containing:
-  /// - 'encryptedResult': The original encrypted result
-  /// - 'decryptedResult': The decrypted result
-  Future<Map<String, dynamic>> decryptResult({
-    required String encryptedJson,
-    required String encryptionConfig,
-  }) {
-    throw UnimplementedError('decryptResult() has not been implemented.');
+  /// Start a Face Verify flow. Fire-and-forget — the result arrives later on
+  /// [bridgeEvents].
+  Future<void> performFaceVerify(Map<String, dynamic> args) {
+    throw UnimplementedError('performFaceVerify() has not been implemented.');
   }
 }

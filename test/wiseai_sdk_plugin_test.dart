@@ -2,17 +2,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:wiseai_sdk_plugin/wiseai_sdk_plugin.dart';
 import 'package:wiseai_sdk_plugin/wiseai_sdk_plugin_platform_interface.dart';
 import 'package:wiseai_sdk_plugin/wiseai_sdk_plugin_method_channel.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-class MockWiseaiSdkPluginPlatform
-    with MockPlatformInterfaceMixin
-    implements WiseaiSdkPluginPlatform {
-
+/// Extends (rather than implements) the platform interface so the
+/// non-overridden members (bridgeEvents, performXxx) inherit the base
+/// class's throwing defaults instead of requiring every member to be
+/// re-implemented here.
+class MockWiseaiSdkPluginPlatform extends WiseaiSdkPluginPlatform {
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   final WiseaiSdkPluginPlatform initialPlatform = WiseaiSdkPluginPlatform.instance;
 
   test('$MethodChannelWiseaiSdkPlugin is the default instance', () {

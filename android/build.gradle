@@ -26,6 +26,16 @@ allprojects {
                 password = "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"
             }
         }
+        // Required to resolve WiseAiFaceVerify, a transitive dependency of
+        // com.wiseai.ekyc:app pulled in for the Face Verify flow.
+        maven {
+            name = "GitHubPackages-ekyc-face-verify"
+            url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110-face-verify")
+            credentials {
+                username = "WiseAI-Tech"
+                password = "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"
+            }
+        }
         maven { url "https://developer.huawei.com/repo/" }
     }
 }
@@ -53,7 +63,8 @@ android {
     }
 
     defaultConfig {
-        minSdk = 24
+        // WiseAI SDK 3.x requires API 28+ (matches the verified sample app).
+        minSdk = 28
     }
 
     dependencies {

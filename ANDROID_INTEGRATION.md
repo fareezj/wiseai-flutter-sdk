@@ -1,98 +1,44 @@
-# Android eKYC Integration - Fixed Issues
+# Android eKYC Integration Notes
 
-## Issues Fixed
+> The plugin's public API and native bridge contract changed when the
+> WiseAI integration sample (event-channel based, MyKad / Passport NFC /
+> Face Verify) was adopted. The sequence described below (`initSDK` →
+> `setLanguageCode` → `startNewSession` → `performEkyc(exportDoc:...)`) no
+> longer exists. See [README.md](README.md) for the current usage pattern.
 
-### 1. TLS Protocol Error (TLSv1.1 not supported)
-**Problem:** `java.lang.IllegalArgumentException: protocol TLSv1.1 is not supported`
+## SDK version & minimum Android version
 
-**Solution:**
-- Updated WiseAI SDK from `2.5.0` to `2.7.3` (latest version with better TLS support)
-- Set `minSdk = 24` (Android 7.0+) as required by SDK 2.7.0+
+- WiseAI Android SDK: `com.wiseai.ekyc:app:3.0.2` ([android/build.gradle](android/build.gradle))
+- `minSdk = 28` — required by SDK 3.x (the 2.7.x-era `minSdk = 24` requirement
+  no longer applies)
+- Same `minSdk` is set in the example app
+  ([example/android/app/build.gradle.kts](example/android/app/build.gradle.kts))
 
-### 2. Duplicate Session Starts
-**Problem:** App was calling `startNewSession()` twice before performing eKYC
+## Gradle repositories
 
-**Solution:** Removed the duplicate call - only call `startNewSession()` once before each eKYC operation
+Two GitHub Packages maven repos are required to resolve the SDK and its
+Face Verify transitive dependency — both are declared in
+[android/build.gradle](android/build.gradle) (and mirrored in
+[example/android/build.gradle.kts](example/android/build.gradle.kts)):
 
-## Configuration
-
-### Android Plugin ([android/build.gradle](android/build.gradle))
 ```gradle
-dependencies {
-    implementation ("com.wiseai.ekyc:app:2.7.3")  // Updated to latest
-    implementation ("com.google.code.gson:gson:2.10")
-}
-
-defaultConfig {
-    minSdk = 24  // Required by WiseAI SDK 2.7.0+
-}
+maven { url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110") }
+maven { url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110-face-verify") }
 ```
 
-### Example App ([example/android/app/build.gradle.kts](example/android/app/build.gradle.kts))
-```kotlin
-defaultConfig {
-    minSdk = 24  // Required by WiseAI SDK 2.7.0+
-    multiDexEnabled = true
-}
-```
+> The credentials embedded in these `maven` blocks predate this change and
+> are committed in plaintext. Rotate/replace them with your own GitHub
+> Packages PAT before publishing this plugin anywhere public.
 
-## Correct Usage Pattern
+## Bridge contract
 
-```dart
-final plugin = WiseaiSdkPlugin();
+`android/src/main/kotlin/.../WiseaiSdkPlugin.kt` never parses or reshapes
+the SDK's response — it forwards it verbatim over an `EventChannel`, plus
+two non-SDK event sources (`cancelled`, `bridgeError`). See the doc comment
+at the top of that file for the exact event shape before changing it; the
+Dart side classifies the payload in `WiseaiSdkPlugin.resultStream`.
 
-// 1. Initialize SDK once
-await plugin.initSDK(
-  clientId: 'YOUR_API_TOKEN',
-  baseUrl: 'https://wiseconsole-demo.wiseai.tech/',
-);
+## Testing
 
-// 2. Set language
-await plugin.setLanguageCode('en');
-
-// 3. Start a new session (only once before eKYC)
-await plugin.startNewSession(withEncryption: false);
-
-// 4. Perform eKYC
-try {
-  final result = await plugin.performEkyc(
-    exportDoc: true,
-    exportFace: true,
-    cameraFacing: "FRONT",
-  );
-  print('eKYC Result: $result');
-} catch (e) {
-  print('eKYC Error: $e');
-}
-```
-
-## Important Notes
-
-1. **Session Management**: Start a new session only once before each eKYC operation
-2. **Minimum Android Version**: Android 7.0 (API 24) or higher is required
-3. **Firebase Setup**: Ensure you replace the placeholder `google-services.json` with your actual Firebase configuration
-4. **TLS Support**: SDK 2.7.3 uses modern TLS protocols (TLSv1.2+) compatible with current Android versions
-5. **Testing**: Always test on a real device as eKYC requires camera access
-
-## SDK Version Features (2.7.3)
-
-- Support for 16 KB page sizes (Google Play requirement)
-- Enhanced Quality Checking on MyKad
-- Enhanced active liveness detection
-- Bug fixes for document quality checking in HYBRID mode
-- UI enhancements
-- Better TLS/SSL support
-
-## Troubleshooting
-
-### If you still get TLS errors:
-1. Ensure your device is running Android 7.0 (API 24) or higher
-2. Check that the baseUrl uses `https://` (not `http://`)
-3. Verify your Firebase configuration is properly set up
-4. Clear the build cache: `flutter clean && cd android && ./gradlew clean`
-
-### If eKYC doesn't launch:
-1. Check that permissions are granted (Camera, Location)
-2. Verify the API token is valid
-3. Check logs for specific error messages
-4. Ensure session was started successfully before calling performEkyc
+eKYC, Passport NFC, and Face Verify all require a real device — camera
+access (and NFC hardware for the NFC flow) isn't available on the emulator.

@@ -3,111 +3,46 @@ import 'package:flutter/services.dart';
 
 import 'wiseai_sdk_plugin_platform_interface.dart';
 
-/// An implementation of [WiseaiSdkPluginPlatform] that uses method channels.
+/// An implementation of [WiseaiSdkPluginPlatform] that uses method/event
+/// channels. Channel names must match the native bridge exactly — see
+/// android/.../WiseaiSdkPlugin.kt and ios/Classes/WiseaiSdkPlugin.swift.
 class MethodChannelWiseaiSdkPlugin extends WiseaiSdkPluginPlatform {
-  /// The method channel used to interact with the native platform.
+  /// The method channel used to invoke SDK operations on the native side.
   @visibleForTesting
-  final methodChannel = const MethodChannel('com.example/wiseai_sdk');
+  final methodChannel = const MethodChannel('WiseAiMethods');
+
+  /// The event channel the native side uses to stream back SDK results.
+  @visibleForTesting
+  final eventChannel = const EventChannel(
+    'com.wiseai.wiseai_sdk_plugin/events',
+  );
+
+  Stream<Map<String, dynamic>>? _bridgeEvents;
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>(
-      'getPlatformVersion',
-    );
-    return version;
+  Future<String?> getPlatformVersion() {
+    return methodChannel.invokeMethod<String>('getPlatformVersion');
   }
 
   @override
-  Future<void> initSDK({
-    required String clientId,
-    required String baseUrl,
-  }) async {
-    await methodChannel.invokeMethod('initSDK', {
-      'clientId': clientId,
-      'baseUrl': baseUrl,
-    });
+  Stream<Map<String, dynamic>> get bridgeEvents {
+    return _bridgeEvents ??= eventChannel
+        .receiveBroadcastStream()
+        .map((event) => Map<String, dynamic>.from(event as Map));
   }
 
   @override
-  Future<void> setLanguageCode(String languageCode) async {
-    await methodChannel.invokeMethod('setLanguageCode', {
-      'languageCode': languageCode,
-    });
+  Future<void> performMykadEkyc(Map<String, dynamic> args) {
+    return methodChannel.invokeMethod('performMykadEkyc', args);
   }
 
   @override
-  Future<Map<String, dynamic>?> startNewSession({
-    bool withEncryption = false,
-  }) async {
-    final result = await methodChannel.invokeMethod('startNewSession', {
-      'withEncryption': withEncryption,
-    });
-    return result != null ? Map<String, dynamic>.from(result as Map) : null;
+  Future<void> performPassportNFCEkyc(Map<String, dynamic> args) {
+    return methodChannel.invokeMethod('performPassportNFCEkyc', args);
   }
 
   @override
-  Future<Map<String, dynamic>?> startNewSessionWithEncryption() async {
-    final result = await methodChannel.invokeMethod(
-      'startNewSessionWithEncryption',
-    );
-    return result != null ? Map<String, dynamic>.from(result as Map) : null;
-  }
-
-  @override
-  Future<String?> getSessionResult() async {
-    final result = await methodChannel.invokeMethod<String>('getSessionResult');
-    return result;
-  }
-
-  @override
-  Future<Map<String, dynamic>> performEkyc({
-    bool isQualityCheck = false,
-    bool isEncrypt = false,
-    bool isActiveLiveness = false,
-    bool isExportDoc = false,
-    bool isExportFace = false,
-    String cameraFacing = "FRONT",
-  }) async {
-    final result = await methodChannel.invokeMethod('performEkyc', {
-      'isQualityCheck': isQualityCheck,
-      'isEncrypt': isEncrypt,
-      'isActiveLiveness': isActiveLiveness,
-      'isExportDoc': isExportDoc,
-      'isExportFace': isExportFace,
-      'cameraFacing': cameraFacing,
-    });
-    return Map<String, dynamic>.from(result as Map);
-  }
-
-  @override
-  Future<Map<String, dynamic>> performPassportEkyc({
-    bool isEncrypt = false,
-    bool isNFC = false,
-    bool isActiveLiveness = false,
-    bool isExportDoc = false,
-    bool isExportFace = false,
-    String cameraFacing = "FRONT",
-  }) async {
-    final result = await methodChannel.invokeMethod('performPassportEkyc', {
-      'isEncrypt': isEncrypt,
-      'isNFC': isNFC,
-      'isActiveLiveness': isActiveLiveness,
-      'isExportDoc': isExportDoc,
-      'isExportFace': isExportFace,
-      'cameraFacing': cameraFacing,
-    });
-    return Map<String, dynamic>.from(result as Map);
-  }
-
-  @override
-  Future<Map<String, dynamic>> decryptResult({
-    required String encryptedJson,
-    required String encryptionConfig,
-  }) async {
-    final result = await methodChannel.invokeMethod('decryptResult', {
-      'encryptedJson': encryptedJson,
-      'encryptionConfig': encryptionConfig,
-    });
-    return Map<String, dynamic>.from(result as Map);
+  Future<void> performFaceVerify(Map<String, dynamic> args) {
+    return methodChannel.invokeMethod('performFaceVerify', args);
   }
 }

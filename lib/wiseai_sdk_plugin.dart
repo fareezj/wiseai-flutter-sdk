@@ -1,160 +1,215 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
+import 'ekyc_result.dart';
+import 'wiseai_config.dart';
 import 'wiseai_sdk_plugin_platform_interface.dart';
 
+export 'ekyc_result.dart';
+export 'wiseai_config.dart';
+
+/// Owns all SDK response parsing and classification. The native bridge
+/// forwards the SDK's response verbatim and never reshapes it. Event
+/// contract from native:
+///   `{ "source": "sdk" | "cancelled" | "bridgeError",`
+///   `  "rawData": "<string>",`
+///   `  "sessionId"?: "<string>" }`
 class WiseaiSdkPlugin {
+  final _resultStreamController = StreamController<EkycResult>.broadcast();
+
+  /// Stream of classified eKYC / Face Verify results. Listen to this after
+  /// constructing the plugin and before calling any `performXxx` method.
+  Stream<EkycResult> get resultStream => _resultStreamController.stream;
+
+  late final StreamSubscription _eventSubscription;
+
+  WiseaiSdkPlugin() {
+    _eventSubscription = WiseaiSdkPluginPlatform.instance.bridgeEvents.listen(
+      _onEvent,
+      onError: _onChannelError,
+    );
+  }
+
   Future<String?> getPlatformVersion() {
     return WiseaiSdkPluginPlatform.instance.getPlatformVersion();
   }
 
-  /// Initialize the WiseAI SDK with client credentials
-  Future<void> initSDK({required String clientId, required String baseUrl}) {
-    return WiseaiSdkPluginPlatform.instance.initSDK(
-      clientId: clientId,
-      baseUrl: baseUrl,
+  Future<void> performEkyc(MyKadEkycConfig config) {
+    return _invoke(
+      'performMykadEkyc',
+      () => WiseaiSdkPluginPlatform.instance
+          .performMykadEkyc(_buildMyKadArgs(config)),
     );
   }
 
-  /// Set the language code for the SDK
-  Future<void> setLanguageCode(String languageCode) {
-    return WiseaiSdkPluginPlatform.instance.setLanguageCode(languageCode);
-  }
-
-  /// Start a new session with optional encryption
-  ///
-  /// Returns a Map containing:
-  /// - 'sessionId': The session ID (String)
-  /// - 'fullData': The complete JSON response as a string
-  /// - 'encryptionConfig': The encryption configuration (if withEncryption is true)
-  Future<Map<String, dynamic>?> startNewSession({bool withEncryption = false}) {
-    return WiseaiSdkPluginPlatform.instance.startNewSession(
-      withEncryption: withEncryption,
+  Future<void> performPassportNFCEkyc(PassportEkycConfig config) {
+    return _invoke(
+      'performPassportNFCEkyc',
+      () => WiseaiSdkPluginPlatform.instance
+          .performPassportNFCEkyc(_buildPassportArgs(config)),
     );
   }
 
-  /// Start a new session with encryption enabled
-  ///
-  /// This is a convenience method equivalent to calling:
-  /// ```dart
-  /// startNewSession(withEncryption: true)
-  /// ```
-  ///
-  /// Returns a Map containing:
-  /// - 'sessionId': The session ID (String)
-  /// - 'encryptionConfig': The encryption configuration (String)
-  /// - 'fullData': The complete JSON response as a string
-  ///
-  /// Example:
-  /// ```dart
-  /// final sessionData = await wiseaiSdkPlugin.startNewSessionWithEncryption();
-  /// final sessionId = sessionData['sessionId'];
-  /// final encryptionConfig = sessionData['encryptionConfig'];
-  ///
-  /// // Later, decrypt results using the encryption config
-  /// final decrypted = await wiseaiSdkPlugin.decryptResult(
-  ///   encryptedJson: encryptedResult,
-  ///   encryptionConfig: encryptionConfig,
-  /// );
-  /// ```
-  Future<Map<String, dynamic>?> startNewSessionWithEncryption() {
-    return WiseaiSdkPluginPlatform.instance.startNewSessionWithEncryption();
-  }
-
-  /// Get the final session result
-  Future<String?> getSessionResult() {
-    return WiseaiSdkPluginPlatform.instance.getSessionResult();
-  }
-
-  /// Perform MyKad eKYC
-  ///
-  /// Parameters:
-  /// - [isQualityCheck]: Enable quality check for document scanning (default: false)
-  /// - [isEncrypt]: Enable encryption for the session (default: false)
-  /// - [isActiveLiveness]: Enable active liveness detection (default: false)
-  /// - [isExportDoc]: Set to true to get the base64 document image (default: false)
-  /// - [isExportFace]: Set to true to get the base64 face image (default: false)
-  /// - [cameraFacing]: Camera facing direction, either "FRONT" or "BACK" (default: "FRONT")
-  ///
-  /// Returns a map containing the eKYC result data
-  Future<Map<String, dynamic>> performEkyc({
-    bool isQualityCheck = false,
-    bool isEncrypt = false,
-    bool isActiveLiveness = false,
-    bool isExportDoc = false,
-    bool isExportFace = false,
-    String cameraFacing = "FRONT",
-  }) {
-    return WiseaiSdkPluginPlatform.instance.performEkyc(
-      isQualityCheck: isQualityCheck,
-      isEncrypt: isEncrypt,
-      isActiveLiveness: isActiveLiveness,
-      isExportDoc: isExportDoc,
-      isExportFace: isExportFace,
-      cameraFacing: cameraFacing,
+  Future<void> performFaceVerify(FaceVerifyConfig config) {
+    return _invoke(
+      'performFaceVerify',
+      () => WiseaiSdkPluginPlatform.instance
+          .performFaceVerify(_buildFaceVerifyArgs(config)),
     );
   }
 
-  /// Perform Passport eKYC
-  ///
-  /// Parameters:
-  /// - [isEncrypt]: Enable encryption for the session (default: false)
-  /// - [isNFC]: Enable NFC reading for passport (default: false)
-  /// - [isActiveLiveness]: Enable active liveness detection (default: false)
-  /// - [isExportDoc]: Set to true to get the base64 document image (default: false)
-  /// - [isExportFace]: Set to true to get the base64 face image (default: false)
-  /// - [cameraFacing]: Camera facing direction, either "FRONT" or "BACK" (default: "FRONT")
-  ///
-  /// Returns a map containing the eKYC result data
-  Future<Map<String, dynamic>> performPassportEkyc({
-    bool isEncrypt = false,
-    bool isNFC = false,
-    bool isActiveLiveness = false,
-    bool isExportDoc = false,
-    bool isExportFace = false,
-    String cameraFacing = "FRONT",
-  }) {
-    return WiseaiSdkPluginPlatform.instance.performPassportEkyc(
-      isEncrypt: isEncrypt,
-      isNFC: isNFC,
-      isActiveLiveness: isActiveLiveness,
-      isExportDoc: isExportDoc,
-      isExportFace: isExportFace,
-      cameraFacing: cameraFacing,
-    );
+  void dispose() {
+    _eventSubscription.cancel();
+    _resultStreamController.close();
   }
 
-  /// Decrypt encrypted result from WiseAI SDK
-  ///
-  /// This method decrypts an encrypted JSON result using the provided encryption configuration.
-  /// Use this after receiving an encrypted result from the SDK (e.g., from startNewSessionWithEncryption).
-  ///
-  /// Parameters:
-  /// - [encryptedJson]: The encrypted JSON string result from the SDK
-  /// - [encryptionConfig]: The encryption configuration as JSON string (obtained from startNewSessionWithEncryption)
-  ///
-  /// Returns a map containing both encrypted and decrypted results:
-  /// - 'encryptedResult': The original encrypted result
-  /// - 'decryptedResult': The decrypted result as a JSON string
-  ///
-  /// Example:
-  /// ```dart
-  /// final sessionData = await wiseaiSdkPlugin.startNewSessionWithEncryption();
-  /// final encryptionConfig = sessionData['encryptionConfig'];
-  ///
-  /// // After performing eKYC and getting encrypted result
-  /// final result = await wiseaiSdkPlugin.decryptResult(
-  ///   encryptedJson: encryptedResult,
-  ///   encryptionConfig: encryptionConfig,
-  /// );
-  ///
-  /// print('Encrypted: ${result['encryptedResult']}');
-  /// print('Decrypted: ${result['decryptedResult']}');
-  /// ```
-  Future<Map<String, dynamic>> decryptResult({
-    required String encryptedJson,
-    required String encryptionConfig,
-  }) {
-    return WiseaiSdkPluginPlatform.instance.decryptResult(
-      encryptedJson: encryptedJson,
-      encryptionConfig: encryptionConfig,
-    );
+  Map<String, dynamic> _buildMyKadArgs(MyKadEkycConfig config) {
+    final args = _commonArgs(config);
+    if (config is AndroidMyKadEkycConfig) {
+      args['isEncrypt'] = config.isEncrypt;
+      args['isExportFace'] = config.isExportFace;
+      args['isActiveLiveness'] = config.isActiveLiveness;
+    } else if (config is IosMyKadEkycConfig) {
+      args['isEncrypt'] = config.isEncrypt;
+      args['isExportFace'] = config.isExportFace;
+      args['isExportDoc'] = config.isExportDoc;
+    }
+    return args;
+  }
+
+  Map<String, dynamic> _buildPassportArgs(PassportEkycConfig config) {
+    final args = _commonArgs(config);
+    if (config is AndroidPassportEkycConfig) {
+      args['isEncrypt'] = config.isEncrypt;
+      args['isExportFace'] = config.isExportFace;
+      args['isActiveLiveness'] = config.isActiveLiveness;
+    } else if (config is IosPassportEkycConfig) {
+      args['isNFC'] = config.isNFC;
+      args['isEncrypt'] = config.isEncrypt;
+      args['isExportDoc'] = config.isExportDoc;
+      args['isExportFace'] = config.isExportFace;
+    }
+    return args;
+  }
+
+  Map<String, dynamic> _buildFaceVerifyArgs(FaceVerifyConfig config) {
+    final args = _commonArgs(config);
+    args['faceImageBase64'] = base64Encode(config.faceImageBytes);
+    if (config is AndroidFaceVerifyConfig) {
+      args['isExportFace'] = config.isExportFace;
+      args['isActiveLiveness'] = config.isActiveLiveness;
+      args['isEncrypt'] = config.isEncrypt;
+    } else if (config is IosFaceVerifyConfig) {
+      args['isExportFace'] = config.isExportFace;
+      args['isActiveLiveness'] = config.isActiveLiveness;
+      args['isEncrypt'] = config.isEncrypt;
+    }
+    return args;
+  }
+
+  Map<String, dynamic> _commonArgs(WiseAIConfig config) {
+    final args = <String, dynamic>{
+      'apiToken': config.apiToken,
+      'apiURL': config.apiURL,
+      'language': config.language,
+    };
+    if (config.extraParam != null) args['extraParam'] = config.extraParam;
+    return args;
+  }
+
+  Future<void> _invoke(String method, Future<void> Function() call) async {
+    try {
+      await call();
+    } on PlatformException catch (e) {
+      _emitBridgeError("PlatformException invoking '$method': ${e.message}");
+    }
+  }
+
+  void _onEvent(dynamic event) {
+    if (event is! Map) {
+      _emitBridgeError('Native sent non-map event: $event');
+      return;
+    }
+    final source = event['source'] as String?;
+    final rawData = event['rawData'] as String? ?? '';
+    final eventSessionId = event['sessionId'] as String? ?? '';
+
+    switch (source) {
+      case 'sdk':
+        _classifySdkPayload(rawData, fallbackSessionId: eventSessionId);
+        break;
+      case 'cancelled':
+        _resultStreamController.add(EkycResult(
+          status: EkycStatus.cancelled,
+          sessionId: eventSessionId,
+          rawData: '',
+        ));
+        break;
+      case 'bridgeError':
+        _emitBridgeError(rawData, sessionId: eventSessionId);
+        break;
+      default:
+        _emitBridgeError('Unknown event source: $source (raw=$rawData)');
+    }
+  }
+
+  void _classifySdkPayload(String rawData, {String fallbackSessionId = ''}) {
+    final Map<String, dynamic> parsed;
+    try {
+      final decoded = jsonDecode(rawData);
+      if (decoded is! Map<String, dynamic>) {
+        _emitBridgeError('SDK payload is not a JSON object: $rawData',
+            sessionId: fallbackSessionId);
+        return;
+      }
+      parsed = decoded;
+    } catch (e) {
+      debugPrint('[WiseaiSdkPlugin] SDK payload not valid JSON: $rawData');
+      _emitBridgeError('SDK payload not valid JSON: $e',
+          sessionId: fallbackSessionId);
+      return;
+    }
+
+    final rawSessionId = (parsed['sessionId'] as String?) ?? '';
+    final sessionId =
+        rawSessionId.isNotEmpty ? rawSessionId : fallbackSessionId;
+    final status = parsed['status'] as String?;
+
+    if (status == 'error') {
+      _resultStreamController.add(EkycResult(
+        status: EkycStatus.sdkError,
+        sessionId: sessionId,
+        errorCode: parsed['code'] as String?,
+        errorMessage: parsed['message'] as String?,
+        rawData: rawData,
+        parsed: parsed,
+      ));
+      return;
+    }
+
+    _resultStreamController.add(EkycResult(
+      status: EkycStatus.success,
+      sessionId: sessionId,
+      rawData: rawData,
+      parsed: parsed,
+    ));
+  }
+
+  void _emitBridgeError(String message, {String sessionId = ''}) {
+    debugPrint('[WiseaiSdkPlugin] bridgeError: $message');
+    _resultStreamController.add(EkycResult(
+      status: EkycStatus.bridgeError,
+      sessionId: sessionId,
+      errorCode: 'BRIDGE_ERROR',
+      errorMessage: message,
+      rawData: message,
+    ));
+  }
+
+  void _onChannelError(Object error) {
+    _emitBridgeError('EventChannel error: $error');
   }
 }

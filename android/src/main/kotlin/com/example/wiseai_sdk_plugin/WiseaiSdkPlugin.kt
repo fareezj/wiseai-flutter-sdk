@@ -1,508 +1,422 @@
 package com.example.wiseai_sdk_plugin
 
+import android.app.Activity
+import android.content.Intent
+import android.os.Build
+import android.util.Base64
+import android.util.Log
+import androidx.annotation.NonNull
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.wiseai.ekyc110.WiseAiApp
+import com.wiseai.ekyc110.ekyc.Ekyc
+import com.wiseai.ekyc110.ekyc.PassportNFCEkyc
+import com.wiseai.ekyc110.ekyc.WiseAiFaceVerify
+import com.wiseai.ekyc110.helper.SessionCallback
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
-import android.app.Activity
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.util.Log
-import com.wiseai.ekyc110.WiseAiApp
-import com.wiseai.ekyc110.helper.SessionCallback
-import com.google.gson.Gson
-import com.google.gson.JsonParser
-import org.json.JSONObject
-import org.json.JSONArray
-import android.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-/** WiseaiSdkPlugin */
-class WiseaiSdkPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.ActivityResultListener {
-  /// The MethodChannel that links Flutter to the native code.
-  private lateinit var channel : MethodChannel
-  private lateinit var applicationContext: Context
-  private var wiseAiAppInstance: WiseAiApp? = null
-  private var activity: Activity? = null
-  private var pendingResult: Result? = null
-  private val gson = Gson()
-  private var encryptionConfig: JSONObject? = null // Store encryption config for auto-decryption
-  
-  companion object {
-    private const val REQUEST_CODE_EKYC = 1001
-    private const val REQUEST_CODE_PASSPORT_EKYC = 1002
-  }
+/**
+ * WiseAI Flutter Bridge
+ *
+ * Design contract (do not change without updating the Flutter side):
+ *
+ * The native bridge forwards SDK responses verbatim. It never parses the
+ * SDK's `status` / `code` / `message` / `sessionId`, never reshapes the
+ * JSON, and never decides what is "success" vs "error" — Flutter does that.
+ *
+ * The bridge always sends one of three event sources, plus an optional
+ * event-level sessionId:
+ *   { "source": "sdk",         "rawData": <verbatim SDK JSON, decrypted if needed>, "sessionId"?: "..." }
+ *   { "source": "cancelled",   "rawData": "",                                       "sessionId"?: "..." }
+ *   { "source": "bridgeError", "rawData": <verbatim message — no SDK eKYC payload>, "sessionId"?: "..." }
+ *
+ * The event-level "sessionId" is captured from WiseAiApp.startNewSession
+ * (SDK v2.7.7+ returns it immediately upon session creation, regardless
+ * of encryption). It lets Flutter correlate cancelled / bridgeError events
+ * to a session even when no SDK eKYC payload is produced.
+ *
+ * "sdk" carries the SDK's structured eKYC response from getResult() — both
+ * the success and the error variant.
+ *
+ * "bridgeError" covers every case where there is no structured SDK response
+ * to forward — bridge-side failures (missing args, decode errors), SDK
+ * callbacks that return only a String (SessionCallback.onError), or the SDK
+ * activity exiting without a payload. The rawData carries whatever message
+ * we have, verbatim. The bridge never invents JSON.
+ */
+class WiseaiSdkPlugin :
+    FlutterPlugin,
+    MethodChannel.MethodCallHandler,
+    EventChannel.StreamHandler,
+    ActivityAware,
+    PluginRegistry.ActivityResultListener {
 
-  // --- FlutterPlugin IMPLEMENTATION ---
-  
-  override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    // 3. Establish the MethodChannel connection using the same name as the Dart side
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.example/wiseai_sdk")
-    channel.setMethodCallHandler(this)
-    // Store the application context, needed for the WiseAiApp().init() call
-    applicationContext = flutterPluginBinding.applicationContext
-    
-    // Instantiate the WiseAiApp object here to call its non-static methods later
-    wiseAiAppInstance = WiseAiApp()
-  }
+    private val METHOD_CHANNEL = "WiseAiMethods"
+    private val EVENT_CHANNEL = "com.wiseai.wiseai_sdk_plugin/events"
+    private val ACTIVITY_EKYC = 1001
+    private val ACTIVITY_PASSPORT_NFC_EKYC = 1002
+    private val ACTIVITY_FACE_VERIFY = 1003
+    private val TAG = "WiseAiBridge"
 
-  override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
-    wiseAiAppInstance = null
-  }
+    private lateinit var methodChannel: MethodChannel
+    private lateinit var eventChannel: EventChannel
+    private var activity: Activity? = null
+    private var eventSink: EventChannel.EventSink? = null
 
-  // --- ActivityAware IMPLEMENTATION ---
-  
-  override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-    activity = binding.activity
-    binding.addActivityResultListener(this)
-  }
+    private val wiseAiApp: WiseAiApp = WiseAiApp()
 
-  override fun onDetachedFromActivityForConfigChanges() {
-    activity = null
-  }
+    private lateinit var encryptionAlgorithm: String
+    private lateinit var key: String
+    private lateinit var iv: String
+    private lateinit var padding: String
+    private lateinit var mode: String
+    private var ifEncryption: Boolean = false
 
-  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    activity = binding.activity
-    binding.addActivityResultListener(this)
-  }
+    /**
+     * SessionId returned by WiseAiApp.startNewSession (SDK v2.7.7+ returns it
+     * regardless of encryption). Reset at the start of each flow; attached to
+     * cancelled / bridgeError events so Flutter can correlate them to the
+     * session even when no SDK eKYC payload is produced.
+     */
+    private var currentSessionId: String = ""
 
-  override fun onDetachedFromActivity() {
-    activity = null
-  }
+    // --- FlutterPlugin ---
 
-  // --- MethodCallHandler IMPLEMENTATION ---
+    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, METHOD_CHANNEL)
+        methodChannel.setMethodCallHandler(this)
+        eventChannel = EventChannel(flutterPluginBinding.binaryMessenger, EVENT_CHANNEL)
+        eventChannel.setStreamHandler(this)
+    }
 
-  override fun onMethodCall(call: MethodCall, result: Result) {
-    Log.d("WiseaiPlugin", "Received method call: ${call.method}")
-    
-    when (call.method) {
-        "getPlatformVersion" -> {
-            result.success("Android ${android.os.Build.VERSION.RELEASE}")
-        }
-        
-        "initSDK" -> {
-            // Retrieve arguments from Dart
-            val clientId = call.argument<String>("clientId")
-            val baseUrl = call.argument<String>("baseUrl")
-            
-            if (clientId.isNullOrEmpty() || baseUrl.isNullOrEmpty()) {
-                result.error("ARG_ERROR", "clientId and baseUrl are required for initialization.", null)
-                return
+    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+        methodChannel.setMethodCallHandler(null)
+        eventChannel.setStreamHandler(null)
+    }
+
+    // --- ActivityAware ---
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity
+        binding.addActivityResultListener(this)
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        activity = null
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        activity = binding.activity
+        binding.addActivityResultListener(this)
+    }
+
+    override fun onDetachedFromActivity() {
+        activity = null
+    }
+
+    // --- EventChannel.StreamHandler ---
+
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        this.eventSink = events
+        Log.d(TAG, "EventChannel: Flutter started listening")
+    }
+
+    override fun onCancel(arguments: Any?) {
+        this.eventSink = null
+        Log.d(TAG, "EventChannel: Flutter stopped listening")
+    }
+
+    // --- MethodCallHandler ---
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        when (call.method) {
+            "getPlatformVersion" -> result.success("Android ${Build.VERSION.RELEASE}")
+            "performMykadEkyc" -> {
+                performMykadEkyc(call.arguments as? Map<String, Any> ?: emptyMap())
+                result.success(null)
             }
-            
-            try {
-                // Call the native non-static init function
-                wiseAiAppInstance?.init(applicationContext, clientId, baseUrl)
-                result.success(null) // Return success (void in Dart)
-            } catch (e: Exception) {
-                // Return platform exception if initialization fails
-                result.error("SDK_INIT_FAILED", "Native WiseAI initialization failed.", e.localizedMessage)
+            "performPassportNFCEkyc" -> {
+                performPassportNFCEkyc(call.arguments as? Map<String, Any> ?: emptyMap())
+                result.success(null)
             }
-        }
-        
-        "setLanguageCode" -> {
-            val languageCode = call.argument<String>("languageCode")
-            
-            if (languageCode.isNullOrEmpty()) {
-                 result.error("ARG_ERROR", "languageCode is required.", null)
-                 return
+            "performFaceVerify" -> {
+                performFaceVerify(call.arguments as? Map<String, Any> ?: emptyMap())
+                result.success(null)
             }
-            
-            // Call the native static setLanguageCode function
-            WiseAiApp.setLanguageCode(languageCode)
-            result.success(null)
-        }
-
-        "startNewSession" -> {
-            // Retrieve arguments
-            val withEncryption = call.argument<Boolean>("withEncryption") ?: false
-
-            // IMPORTANT: Bridge the native asynchronous SessionCallback to the Flutter Result
-            WiseAiApp.startNewSession(withEncryption, object : SessionCallback {
-                override fun onComplete(var1: Any?) {
-                    // This is called when the session request succeeds
-                    // var1 should be the JSON String/Object containing session keys
-                    Log.d("WiseaiPlugin", "Session onComplete: $var1")
-                    
-                    try {
-                        val sessionData = JSONObject(var1.toString())
-                        
-                        // Store encryption config if present for auto-decryption
-                        // The encryption params are at the root level when encryption is enabled
-                        if (withEncryption && sessionData.has("key")) {
-                            encryptionConfig = sessionData
-                        }
-                        
-                        // Convert entire JSON to map for Flutter
-                        val resultMap = jsonToMap(sessionData)
-                        
-                        result.success(resultMap)
-                    } catch (e: Exception) {
-                        Log.e("WiseaiPlugin", "Could not parse session data: ${e.message}", e)
-                        // Fallback: return raw data wrapped in map
-                        result.success(mapOf("fullData" to var1.toString()))
-                    }
-                }
-
-                override fun onError(var1: String?) {
-                    // This is called when the session request fails
-                    Log.e("WiseaiPlugin", "Session onError: $var1")
-                    result.error("SESSION_FAILED", "WiseAI Session Error: $var1", null)
-                }
-            })
-            // NOTE: We do NOT call result.success() here, as the result is returned later
-            // inside the onComplete/onError methods of the SessionCallback.
-        }
-        
-        "startNewSessionWithEncryption" -> {
-            // Convenience method that always uses encryption
-            WiseAiApp.startNewSession(true, object : SessionCallback {
-                override fun onComplete(var1: Any?) {
-                    Log.d("WiseaiPlugin", "Encrypted session onComplete: $var1")
-                    
-                    try {
-                        val sessionData = JSONObject(var1.toString())
-                        val sessionId = sessionData.getString("sessionId")
-                        
-                        // Store encryption config for auto-decryption
-                        // The encryption params are at the root level, not nested
-                        encryptionConfig = sessionData
-                        
-                        // Convert entire JSON to map for Flutter
-                        val resultMap = jsonToMap(sessionData)
-                        
-                        result.success(resultMap)
-                    } catch (e: Exception) {
-                        Log.e("WiseaiPlugin", "Could not parse session data: ${e.message}", e)
-                        // Fallback: return raw data wrapped in map
-                        result.success(mapOf("fullData" to var1.toString()))
-                    }
-                }
-
-                override fun onError(var1: String?) {
-                    Log.e("WiseaiPlugin", "Encrypted session onError: $var1")
-                    result.error("SESSION_FAILED", "WiseAI Session Error: $var1", null)
-                }
-            })
-        }
-        
-        "getSessionResult" -> {
-             // Call the native static function to get the final result string
-             val finalResult = WiseAiApp.getResult()
-             result.success(finalResult)
-        }
-        
-        "performEkyc" -> {
-            if (activity == null) {
-                result.error("NO_ACTIVITY", "Activity not available", null)
-                return
-            }
-            
-            // Get parameters
-            val isQualityCheck = call.argument<Boolean>("isQualityCheck") ?: false
-            val isEncrypt = call.argument<Boolean>("isEncrypt") ?: false
-            val isActiveLiveness = call.argument<Boolean>("isActiveLiveness") ?: false
-            val isExportDoc = call.argument<Boolean>("isExportDoc") ?: false
-            val isExportFace = call.argument<Boolean>("isExportFace") ?: false
-            val cameraFacing = call.argument<String>("cameraFacing") ?: "FRONT"
-            
-            // Store pending result
-            pendingResult = result
-            
-            // Create local reference for smart cast
-            val currentActivity = activity
-            
-            try {
-                // Create Intent for eKYC - activity is in SDK but runs in app's context
-                val intent = Intent(currentActivity, Class.forName("com.wiseai.ekyc110.ekyc.Ekyc"))
-                
-                // Set configurations
-                intent.putExtra("COUNTRY_CODE", "MYS")
-                intent.putExtra("ID_TYPE", "ID")
-                intent.putExtra("EXPORT_DOC", isExportDoc)
-                intent.putExtra("EXPORT_FACE", isExportFace)
-                intent.putExtra("CAMERA_FACING", cameraFacing)
-                intent.putExtra("QUALITY_MODE", if (isQualityCheck) "HYBRID" else "NORMAL")
-                intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", isActiveLiveness)
-                intent.putExtra("LANGUAGE_CODE", "en")
-                
-                // Use existing session - user must call startNewSession before performEkyc
-                Log.d("WiseaiPlugin", "Launching eKYC with existing session")
-                currentActivity?.startActivityForResult(intent, REQUEST_CODE_EKYC)
-            } catch (e: Exception) {
-                Log.e("WiseaiPlugin", "eKYC exception: ${e.message}", e)
-                result.error("EKYC_ERROR", "Failed to start eKYC: ${e.message}", null)
-                pendingResult = null
-            }
-        }
-        
-        "performPassportEkyc" -> {
-            if (activity == null) {
-                result.error("NO_ACTIVITY", "Activity not available", null)
-                return
-            }
-            
-            // Get parameters
-            val isEncrypt = call.argument<Boolean>("isEncrypt") ?: false
-            val isNFC = call.argument<Boolean>("isNFC") ?: false
-            val isActiveLiveness = call.argument<Boolean>("isActiveLiveness") ?: false
-            val isExportDoc = call.argument<Boolean>("isExportDoc") ?: false
-            val isExportFace = call.argument<Boolean>("isExportFace") ?: false
-            val cameraFacing = call.argument<String>("cameraFacing") ?: "FRONT"
-            
-            // Store pending result
-            pendingResult = result
-            
-            // Create local reference for smart cast
-            val currentActivity = activity
-            
-            try {
-                // Create Intent for Passport NFC eKYC - activity is in SDK but runs in app's context
-                val intent = Intent(currentActivity, Class.forName("com.wiseai.ekyc110.ekyc.PassportNFCEkyc"))
-                
-                // Set configurations
-                intent.putExtra("TIMEOUT_PERIOD", 15)
-                intent.putExtra("CAMERA_FACING", cameraFacing)
-                intent.putExtra("QUALITY_MODE", "HYBRID")
-                intent.putExtra("ACTIVATE_ACTIVE_LIVENESS", isActiveLiveness)
-                intent.putExtra("EXPORT_DOC", isExportDoc)
-                intent.putExtra("EXPORT_FACE", isExportFace)
-                intent.putExtra("ENABLE_NFC", isNFC)
-                
-                // Use existing session - user must call startNewSession before performPassportEkyc
-                Log.d("WiseaiPlugin", "Launching passport eKYC with existing session")
-                currentActivity?.startActivityForResult(intent, REQUEST_CODE_PASSPORT_EKYC)
-            } catch (e: Exception) {
-                Log.e("WiseaiPlugin", "Passport eKYC exception: ${e.message}", e)
-                result.error("EKYC_ERROR", "Failed to start passport eKYC: ${e.message}", null)
-                pendingResult = null
-            }
-        }
-        
-        "decryptResult" -> {
-            // Get arguments
-            val encryptedJson = call.argument<String>("encryptedJson")
-            val encryptionConfigJson = call.argument<String>("encryptionConfig")
-            
-            if (encryptedJson.isNullOrEmpty() || encryptionConfigJson.isNullOrEmpty()) {
-                result.error("ARG_ERROR", "encryptedJson and encryptionConfig are required", null)
-                return
-            }
-            
-            // Check if SDK is initialized
-            if (wiseAiAppInstance == null) {
-                result.error("SDK_NOT_INITIALIZED", "WiseAI SDK not initialized. Call initSDK first.", null)
-                return
-            }
-            
-            try {
-                // Parse encryption config from JSON string to JSONObject
-                val configObject = JSONObject(encryptionConfigJson)
-                
-                // Extract decryption parameters from config
-                val key = configObject.getString("key")
-                val initVector = configObject.getString("iv")
-                val padding = configObject.getString("padding")
-                val mode = configObject.getString("mode")
-                var algorithm = configObject.getString("alg")
-                
-                // Perform decryption using the decryptString method
-                val decryptedResult = decryptString(encryptedJson, key, initVector, padding, mode, algorithm)
-                
-                // Return both encrypted and decrypted results
-                val resultMap = mapOf(
-                    "encryptedResult" to encryptedJson,
-                    "decryptedResult" to decryptedResult
-                )
-                result.success(resultMap)
-            } catch (e: Exception) {
-                Log.e("WiseaiPlugin", "Decryption failed: ${e.message}", e)
-                result.error("DECRYPTION_ERROR", "Failed to decrypt result: ${e.message}", null)
-            }
-        }
-        
-        else -> {
-            result.notImplemented()
+            else -> result.notImplemented()
         }
     }
-  }
-  
-  // --- Helper Methods ---
-  
-  private fun jsonToMap(json: JSONObject): Map<String, Any?> {
-      val map = mutableMapOf<String, Any?>()
-      val keys = json.keys()
-      while (keys.hasNext()) {
-          val key = keys.next()
-          var value = json.get(key)
-          when (value) {
-              is JSONObject -> value = jsonToMap(value)
-              is JSONArray -> value = jsonArrayToList(value)
-              JSONObject.NULL -> value = null
-          }
-          map[key] = value
-      }
-      return map
-  }
-  
-  private fun jsonArrayToList(array: JSONArray): List<Any?> {
-      val list = mutableListOf<Any?>()
-      for (i in 0 until array.length()) {
-          var value = array.get(i)
-          when (value) {
-              is JSONObject -> value = jsonToMap(value)
-              is JSONArray -> value = jsonArrayToList(value)
-              JSONObject.NULL -> value = null
-          }
-          list.add(value)
-      }
-      return list
-  }
-  
-  // --- ActivityResultListener IMPLEMENTATION ---
-  
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-      Log.d("WiseaiPlugin", "onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
-      
-      when (requestCode) {
-          REQUEST_CODE_EKYC, REQUEST_CODE_PASSPORT_EKYC -> {
-              if (resultCode == Activity.RESULT_OK) {
-                  try {
-                      // Get result from WiseAiApp
-                      val resultString = WiseAiApp.getResult()
-                      Log.d("WiseaiPlugin", "eKYC result: $resultString")
-                      
-                      // If we have encryption config, decrypt the result automatically
-                      if (encryptionConfig != null) {
-                          try {
-                              // Extract decryption parameters from stored encryption config
-                              val key = encryptionConfig!!.getString("key")
-                              val initVector = encryptionConfig!!.getString("iv")
-                              val padding = encryptionConfig!!.getString("padding")
-                              val mode = encryptionConfig!!.getString("mode")
-                              val algorithm = encryptionConfig!!.getString("alg")
-                              
-                              // Decrypt using the decryptString method
-                              val decryptedResult = decryptString(resultString, key, initVector, padding, mode, algorithm)
-                              Log.d("WiseaiPlugin", "Decrypted result: $decryptedResult")
-                              
-                              // Parse the decrypted result
-                              val jsonObject = JsonParser.parseString(decryptedResult).asJsonObject
-                              val jsonOrgObject = JSONObject(decryptedResult)
-                              
-                              // Check for errors
-                              if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {
-                                  val code = if (jsonObject.has("code")) jsonObject.get("code").asString else "UNKNOWN"
-                                  val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
-                                  pendingResult?.error(code, message, null)
-                              } else {
-                                  // Return both encrypted and decrypted results
-                                  val resultMap = mutableMapOf<String, Any?>(
-                                      "encryptedResult" to resultString,
-                                      "decryptedResult" to decryptedResult
-                                  )
-                                  
-                                  // Also include parsed decrypted data for convenience
-                                  resultMap["decryptedData"] = jsonToMap(jsonOrgObject)
-                                  
-                                  pendingResult?.success(resultMap)
-                              }
-                          } catch (e: Exception) {
-                              Log.e("WiseaiPlugin", "Decryption failed: ${e.message}", e)
-                              pendingResult?.error("DECRYPTION_ERROR", "Failed to decrypt result: ${e.message}", null)
-                          }
-                      } else {
-                          // No encryption - parse result as-is
-                          val jsonObject = JsonParser.parseString(resultString).asJsonObject
-                          val jsonOrgObject = JSONObject(resultString)
-                          
-                          // Check for errors
-                          if (jsonObject.has("status") && jsonObject.get("status").asString == "error") {
-                              val code = if (jsonObject.has("code")) jsonObject.get("code").asString else "UNKNOWN"
-                              val message = if (jsonObject.has("message")) jsonObject.get("message").asString else "Unknown error"
-                              pendingResult?.error(code, message, null)
-                          } else {
-                              // Convert to map and return success
-                              val resultMap = jsonToMap(jsonOrgObject)
-                              pendingResult?.success(resultMap)
-                          }
-                      }
-                  } catch (e: Exception) {
-                      Log.e("WiseaiPlugin", "Error parsing result: ${e.message}", e)
-                      pendingResult?.error("PARSE_ERROR", "Failed to parse result: ${e.message}", null)
-                  } finally {
-                      pendingResult = null
-                  }
-              } else {
-                  // Check if cancelled
-                  val status = data?.getStringExtra("STATUS")
-                  if (status == "CANCELLED") {
-                      pendingResult?.error("CANCELLED", "User cancelled eKYC", null)
-                  } else {
-                      pendingResult?.error("UNEXPECTED_ERROR", "eKYC failed with unexpected error", null)
-                  }
-                  pendingResult = null
-              }
-              return true
-          }
-      }
-      return false
-  }
-  
-  // --- Decryption Helper Method ---
-  
-  /**
-   * Decrypts an encrypted string using AES encryption with the provided parameters.
-   * This method follows the WiseAI SDK documentation for manual decryption.
-   * 
-   * @param encryptedText The Base64 encoded encrypted text
-   * @param key The Base64 encoded encryption key
-   * @param initVector The Base64 encoded initialization vector (IV)
-   * @param padding The padding mode (e.g., "PKCS5Padding")
-   * @param mode The cipher mode (e.g., "CBC")
-   * @param algorithm The encryption algorithm (e.g., "AES256" or "AES")
-   * @return The decrypted string
-   * @throws Exception if decryption fails
-   */
-  private fun decryptString(
-      encryptedText: String,
-      key: String,
-      initVector: String,
-      padding: String,
-      mode: String,
-      algorithm: String
-  ): String {
-      // Create IV parameter spec from Base64 decoded init vector
-      val iv = IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT))
-      
-      // Handle AES256 algorithm name - convert to standard "AES"
-      var actualAlgorithm = algorithm
-      if (algorithm == "AES256") {
-          actualAlgorithm = "AES"
-      }
-      
-      // Create secret key spec from Base64 decoded key
-      val sKeySpec = SecretKeySpec(Base64.decode(key, Base64.DEFAULT), actualAlgorithm)
-      
-      // Create transformation string (e.g., "AES/CBC/PKCS5Padding")
-      val transformation = "$actualAlgorithm/$mode/$padding"
-      
-      // Initialize cipher for decryption
-      val cipher = Cipher.getInstance(transformation)
-      cipher.init(Cipher.DECRYPT_MODE, sKeySpec, iv)
-      
-      // Decrypt the Base64 decoded encrypted text
-      val original = cipher.doFinal(Base64.decode(encryptedText, Base64.DEFAULT))
-      
-      // Return decrypted string in UTF-8 encoding
-      return String(original, Charsets.UTF_8)
-  }
+
+    // MARK: - SDK Operations
+
+    private fun performMykadEkyc(args: Map<String, Any>) {
+        val currentActivity = activity
+        if (currentActivity == null) {
+            sendBridgeError("Activity not available")
+            return
+        }
+        currentSessionId = ""
+
+        val apiToken = args["apiToken"] as? String ?: ""
+        val apiURL = args["apiURL"] as? String ?: ""
+        val language = args["language"] as? String ?: "EN"
+        ifEncryption = args["isEncrypt"] as? Boolean ?: false
+        val extraParamMap = args["extraParam"] as? Map<String, String>
+
+        val extraParam = JsonObject()
+        extraParamMap?.forEach { (k, v) -> extraParam.addProperty(k, v) }
+
+        wiseAiApp.init(currentActivity, apiToken, apiURL)
+        // or initialize SDK with extraParam
+        //wiseAiApp.initWithExtraParam(currentActivity, apiToken, apiURL, extraParam)
+
+        val intent = Intent(currentActivity, Ekyc::class.java).apply {
+            putExtra("COUNTRY_CODE", "MYS")
+            putExtra("ID_TYPE", "ID")
+            putExtra("EXPORT_FACE", true)
+            putExtra("CAMERA_FACING", "FRONT")
+            putExtra("IF_ENCRYPTION", ifEncryption)
+            putExtra("LANGUAGE_CODE", language)
+        }
+
+        WiseAiApp.startNewSession(ifEncryption, object : SessionCallback {
+            override fun onComplete(data: Any?) {
+                handleSessionCallback(data)
+                currentActivity.startActivityForResult(intent, ACTIVITY_EKYC)
+            }
+            override fun onError(exception: String) {
+                // Session never started → no structured SDK eKYC response exists.
+                // Forward the SDK's message verbatim; bridge does not invent JSON.
+                sendBridgeError(exception)
+            }
+        })
+    }
+
+    private fun performPassportNFCEkyc(args: Map<String, Any>) {
+        val currentActivity = activity
+        if (currentActivity == null) {
+            sendBridgeError("Activity not available")
+            return
+        }
+        currentSessionId = ""
+        val apiToken = args["apiToken"] as? String ?: ""
+        val apiURL = args["apiURL"] as? String ?: ""
+        val language = args["language"] as? String ?: "EN"
+        ifEncryption = args["isEncrypt"] as? Boolean ?: false
+        val extraParamMap = args["extraParam"] as? Map<String, String>
+
+        val extraParam = JsonObject()
+        extraParamMap?.forEach { (k, v) -> extraParam.addProperty(k, v) }
+
+        wiseAiApp.init(currentActivity, apiToken, apiURL)
+        // or initialize SDK with extraParam
+        // wiseAiApp.initWithExtraParam(currentActivity, apiToken, apiURL, extraParam)
+
+        val intent = Intent(currentActivity, PassportNFCEkyc::class.java).apply {
+            putExtra("COUNTRY_CODE", "")
+            putExtra("ID_TYPE", "PASSPORT")
+            putExtra("EXPORT_FACE", true)
+            putExtra("TIMEOUT_PERIOD", 15)
+            putExtra("CAMERA_FACING", "FRONT")
+            putExtra("IF_ENCRYPTION", ifEncryption)
+            putExtra("LANGUAGE_CODE", language)
+        }
+
+        WiseAiApp.startNewSession(ifEncryption, object : SessionCallback {
+            override fun onComplete(data: Any?) {
+                handleSessionCallback(data)
+                currentActivity.startActivityForResult(intent, ACTIVITY_PASSPORT_NFC_EKYC)
+            }
+            override fun onError(exception: String) {
+                sendBridgeError(exception)
+            }
+        })
+    }
+
+    private fun performFaceVerify(args: Map<String, Any>) {
+        val currentActivity = activity
+        if (currentActivity == null) {
+            sendBridgeError("Activity not available")
+            return
+        }
+        currentSessionId = ""
+        val apiToken = args["apiToken"] as? String ?: ""
+        val apiURL = args["apiURL"] as? String ?: ""
+        val language = args["language"] as? String ?: "EN"
+        val isExportFace = args["isExportFace"] as? Boolean ?: false
+        ifEncryption = args["isEncrypt"] as? Boolean ?: false
+        val faceImageBase64 = args["faceImageBase64"] as? String
+        val isActiveLiveness = args["isActiveLiveness"] as? Boolean ?: false
+
+        if (faceImageBase64 == null) {
+            sendBridgeError("Face Verify: faceImageBase64 is required")
+            return
+        }
+
+        try {
+            val faceImageBytes = Base64.decode(faceImageBase64, Base64.DEFAULT)
+            android.graphics.BitmapFactory.decodeByteArray(faceImageBytes, 0, faceImageBytes.size)
+                ?: throw Exception("Failed to decode image bytes to Bitmap")
+
+            wiseAiApp.init(currentActivity, apiToken, apiURL)
+            WiseAiApp.storeFaceImage(faceImageBytes)
+
+            val intent = Intent(currentActivity, WiseAiFaceVerify::class.java).apply {
+                putExtra("EXPORT_FACE", isExportFace)
+                putExtra("CAMERA_FACING", "FRONT")
+                putExtra("IF_ENCRYPTION", ifEncryption)
+                putExtra("LANGUAGE_CODE", language)
+                putExtra("ACTIVATE_ACTIVE_LIVENESS", isActiveLiveness)
+            }
+
+            WiseAiApp.startNewSession(ifEncryption, object : SessionCallback {
+                override fun onComplete(data: Any?) {
+                    handleSessionCallback(data)
+                    currentActivity.startActivityForResult(intent, ACTIVITY_FACE_VERIFY)
+                }
+                override fun onError(exception: String) {
+                    sendBridgeError(exception)
+                }
+            })
+        } catch (e: Exception) {
+            sendBridgeError("Face Verify init failed: ${e.message}")
+        }
+    }
+
+    // MARK: - Activity Result Handling
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+        when (requestCode) {
+            ACTIVITY_EKYC,
+            ACTIVITY_PASSPORT_NFC_EKYC,
+            ACTIVITY_FACE_VERIFY -> {
+                handleSdkActivityResult(resultCode, data)
+                return true
+            }
+            else -> return false
+        }
+    }
+
+    private fun handleSdkActivityResult(resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            // Step 1: get the SDK's raw result string. If getResult() throws,
+            // there is no SDK response to forward — emit a bridge error.
+            val raw: String
+            try {
+                raw = WiseAiApp.getResult()
+            } catch (e: Exception) {
+                sendBridgeError("getResult() threw: ${e.message}")
+                return
+            }
+
+            // Step 2: decrypt if needed. On any decryption failure, fall back
+            // to the original raw string so the backend still sees something
+            // with sessionId. Do NOT replace it with a custom envelope.
+            var payload: String
+            try {
+                payload = decryptResultIfNeeded(raw)
+            } catch (e: Exception) {
+                Log.w(TAG, "Decryption failed, forwarding original: ${e.message}")
+                payload = raw
+            }
+
+            sendSdkResult(payload)
+        } else {
+            // Non-OK result from the SDK activity: cancellation or internal abort.
+            val status = data?.getStringExtra("STATUS")
+            if (status == "CANCELLED") {
+                sendCancelled()
+            } else {
+                // SDK activity exited without a structured response — nothing to forward.
+                sendBridgeError("SDK activity ended with non-OK result, status=$status")
+            }
+        }
+    }
+
+    // MARK: - Session Callback Helpers
+    private fun handleSessionCallback(data: Any?) {
+        if (data == null) return
+        try {
+            val obj = JsonParser.parseString(data.toString()).asJsonObject
+            // SDK v2.7.7+: sessionId returned immediately upon session creation
+            // regardless of encryption.
+            if (obj.has("sessionId")) {
+                currentSessionId = obj.get("sessionId").asString ?: ""
+            }
+            // Encryption keys are only present when isEncrypt = true.
+            if (obj.has("key")) {
+                key = obj["key"].asString
+                iv = obj["iv"].asString
+                padding = obj["padding"].asString
+                mode = obj["mode"].asString
+                encryptionAlgorithm = obj["alg"].asString
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to parse session callback data: ${e.message}")
+        }
+    }
+
+    private fun decryptResultIfNeeded(result: String): String {
+        var jsonObject = JsonParser.parseString(result).asJsonObject
+        if (jsonObject.has("encryptedResult")) {
+            val sessionId = jsonObject["sessionId"].asString
+            val encryptedText = jsonObject["encryptedResult"].asString
+            val decryptedString = decryptString(encryptedText, key, iv, padding, mode, encryptionAlgorithm)
+            val decryptedJson = JsonParser.parseString(decryptedString).asJsonObject
+            decryptedJson.addProperty("sessionId", sessionId)
+            jsonObject = decryptedJson
+        }
+        return jsonObject.toString()
+    }
+
+    @Throws(Exception::class)
+    private fun decryptString(
+        encryptedText: String,
+        key: String,
+        initVector: String,
+        padding: String,
+        mode: String,
+        algorithm: String
+    ): String {
+        val ivSpec = IvParameterSpec(Base64.decode(initVector, Base64.DEFAULT))
+        val updatedAlgorithm = if (algorithm == "AES256") "AES" else algorithm
+        val sKeySpec = SecretKeySpec(Base64.decode(key, Base64.DEFAULT), updatedAlgorithm)
+        val cipher = Cipher.getInstance("$updatedAlgorithm/$mode/$padding")
+        cipher.init(Cipher.DECRYPT_MODE, sKeySpec, ivSpec)
+        return String(cipher.doFinal(Base64.decode(encryptedText, Base64.DEFAULT)), Charsets.UTF_8)
+    }
+
+    // MARK: - Event Senders (the ONLY three exits to Flutter)
+
+    private fun sendSdkResult(rawData: String) = sendEvent("sdk", rawData)
+    private fun sendCancelled() = sendEvent("cancelled", "")
+    private fun sendBridgeError(message: String) {
+        Log.e(TAG, "bridgeError: $message")
+        sendEvent("bridgeError", message)
+    }
+
+    private fun sendEvent(source: String, rawData: String) {
+        eventSink?.let { sink ->
+            val event = mutableMapOf<String, Any>(
+                "source" to source,
+                "rawData" to rawData
+            )
+            // Attach early sessionId (SDK v2.7.7+) so cancelled / bridgeError
+            // events can still be correlated to the session. For "sdk" events,
+            // sessionId is also inside rawData; the duplicate is harmless.
+            if (currentSessionId.isNotEmpty()) {
+                event["sessionId"] = currentSessionId
+            }
+            sink.success(event)
+        } ?: Log.w(TAG, "EventSink is null — dropping event source=$source")
+    }
 }

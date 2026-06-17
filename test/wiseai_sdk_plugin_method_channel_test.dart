@@ -6,7 +6,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   MethodChannelWiseaiSdkPlugin platform = MethodChannelWiseaiSdkPlugin();
-  const MethodChannel channel = MethodChannel('wiseai_sdk_plugin');
+  const MethodChannel channel = MethodChannel('WiseAiMethods');
 
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(

@@ -2,313 +2,248 @@ import Flutter
 import UIKit
 import WiseAISDK
 
-// Private delegate handler to avoid exposing WiseAiDelegate to Objective-C
-private class WiseAiDelegateHandler: NSObject, WiseAiDelegate {
+/**
+ * WiseAI Flutter Bridge
+ *
+ * Design contract (do not change without updating the Flutter side):
+ *
+ * The native bridge forwards SDK responses verbatim. It never parses the
+ * SDK's `status` / `code` / `message` / `sessionId`, never reshapes the
+ * JSON, and never decides what is "success" vs "error" — Flutter does that.
+ *
+ * The bridge always sends one of three event sources, plus an optional
+ * event-level sessionId:
+ *   { "source": "sdk",         "rawData": <verbatim SDK JSON, decrypted if needed>, "sessionId"?: "..." }
+ *   { "source": "cancelled",   "rawData": "",                                       "sessionId"?: "..." }
+ *   { "source": "bridgeError", "rawData": <human message — only when SDK never ran>, "sessionId"?: "..." }
+ *
+ * "bridgeError" means the SDK was never reached. SDK-reported errors
+ * (session expired, OCR mismatch, etc.) come back via "sdk" because the
+ * SDK itself produced them.
+ */
+
+/// `WiseaiSdkPlugin` is `@objc`-exported (it's a `FlutterPlugin`), which means
+/// Xcode generates an Objective-C compatibility header for it that Runner
+/// imports across the pod boundary. If that public class conformed directly
+/// to `WiseAiDelegate`/`FaceVerifyDelegate`, the generated header would need
+/// to reference those WiseAISDK protocol names — but WiseAISDK isn't
+/// guaranteed to be visible at the point Runner consumes that header
+/// (unlike Flutter.framework, which every pod can assume is imported),
+/// causing "Cannot find protocol declaration for 'FaceVerifyDelegate'".
+/// Keeping the SDK-protocol conformance on this private, non-exported
+/// object instead avoids that entirely.
+private class WiseAiDelegateHandler: NSObject, WiseAiDelegate, FaceVerifyDelegate {
   weak var plugin: WiseaiSdkPlugin?
-  
+
   init(plugin: WiseaiSdkPlugin) {
     self.plugin = plugin
     super.init()
   }
-  
-  func onEkycComplete(_ jsonResult: String) {
-    plugin?.handleEkycComplete(jsonResult)
+
+  func getSessionIdAndEncryptionConfig(_ sessionIdAndEncryptionConfig: String) {
+    plugin?.handleSessionIdAndEncryptionConfig(sessionIdAndEncryptionConfig)
   }
-  
-  func onEkycException(_ jsonResult: String) {
-    plugin?.handleEkycException(jsonResult)
+
+  func onEkycComplete(_ jsonResult: String)  { plugin?.handleEkycComplete(jsonResult) }
+  func onEkycException(_ jsonResult: String) { plugin?.handleEkycException(jsonResult) }
+  func onEkycCancelled()                     { plugin?.handleEkycCancelled() }
+
+  func getFaceVerifySessionIdAndEncryptionConfig(_ sessionIdAndEncryptionConfig: String) {
+    plugin?.handleFaceVerifySessionIdAndEncryptionConfig(sessionIdAndEncryptionConfig)
   }
-  
-  func onEkycCancelled() {
-    plugin?.handleEkycCancelled()
-  }
-  
-  func getSessionIdAndEncryptionConfig(_ sessionIDandConfig: String) {
-    plugin?.handleSessionIdAndEncryptionConfig(sessionIDandConfig)
-  }
+
+  func onFaceVerifyComplete(_ jsonResult: String)  { plugin?.handleFaceVerifyComplete(jsonResult) }
+  func onFaceVerifyException(_ jsonResult: String) { plugin?.handleFaceVerifyException(jsonResult) }
+  func onFaceVerifyCancelled()                     { plugin?.handleFaceVerifyCancelled() }
 }
 
 @objc(WiseaiSdkPlugin)
-public class WiseaiSdkPlugin: NSObject, FlutterPlugin {
+public class WiseaiSdkPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
+
   private var wiseAiApp: WiseAiApp?
-  private var pendingResult: FlutterResult?
-  private var pendingSessionResult: FlutterResult?
-  private var encryptionConfig: [String: Any]? // Store encryption config for auto-decryption
+  private var encryptionConfig: [String: Any] = [:]
+  private var eventSink: FlutterEventSink?
   private var delegateHandler: WiseAiDelegateHandler?
-  
+
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "com.example/wiseai_sdk", binaryMessenger: registrar.messenger())
     let instance = WiseaiSdkPlugin()
     instance.delegateHandler = WiseAiDelegateHandler(plugin: instance)
-    registrar.addMethodCallDelegate(instance, channel: channel)
+
+    let methodChannel = FlutterMethodChannel(name: "WiseAiMethods",
+                                              binaryMessenger: registrar.messenger())
+    methodChannel.setMethodCallHandler(instance.handle)
+
+    let eventChannel = FlutterEventChannel(name: "com.wiseai.wiseai_sdk_plugin/events",
+                                            binaryMessenger: registrar.messenger())
+    eventChannel.setStreamHandler(instance)
   }
 
+  // MARK: - MethodChannel
+
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    let args = call.arguments as? [String: Any] ?? [:]
     switch call.method {
     case "getPlatformVersion":
       result("iOS " + UIDevice.current.systemVersion)
-      
-    case "initSDK":
-      guard let args = call.arguments as? [String: Any],
-            let clientId = args["clientId"] as? String,
-            let baseUrl = args["baseUrl"] as? String else {
-        result(FlutterError(code: "ARG_ERROR", 
-                           message: "clientId and baseUrl are required", 
-                           details: nil))
-        return
-      }
-      
-      do {
-        wiseAiApp = WiseAiApp(apiToken: clientId, apiURL: baseUrl)
-        result(nil)
-      } catch {
-        result(FlutterError(code: "SDK_INIT_FAILED",
-                           message: "Failed to initialize WiseAI SDK",
-                           details: error.localizedDescription))
-      }
-      
-    case "setLanguageCode":
-      guard let args = call.arguments as? [String: Any],
-            let languageCode = args["languageCode"] as? String else {
-        result(FlutterError(code: "ARG_ERROR",
-                           message: "languageCode is required",
-                           details: nil))
-        return
-      }
-      
-      wiseAiApp?.setLanguage(languageCode)
+    case "performMykadEkyc":
+      performMykadEkyc(args: args)
       result(nil)
-      
-    case "startNewSession":
-      // Note: In SDK v2.0.4+, sessions are managed internally by performEkyc methods
-      // The isEncrypt flag triggers automatic session creation
-      // Return a placeholder response for backwards compatibility
-      result(["sessionId": "auto-managed", "message": "Sessions are now managed internally by the SDK"])
-      
-    case "startNewSessionWithEncryption":
-      // Note: In SDK v2.0.4+, sessions are managed internally by performEkyc methods
-      // The isEncrypt flag triggers automatic session creation and encryption config callback
-      result(["sessionId": "auto-managed", "message": "Sessions are now managed internally by the SDK"])
-      
-    case "getSessionResult":
-      // Note: In iOS SDK, results are typically obtained through delegate callbacks
-      // This is a placeholder - actual implementation depends on how results are stored
-      result("iOS result retrieval needs delegate implementation")
-      
-    case "performEkyc":
-      guard let args = call.arguments as? [String: Any] else {
-        result(FlutterError(code: "ARG_ERROR",
-                           message: "Arguments are required",
-                           details: nil))
-        return
-      }
-      
-      let isExportDoc = args["isExportDoc"] as? Bool ?? false
-      let isExportFace = args["isExportFace"] as? Bool ?? false
-      let isEncrypt = args["isEncrypt"] as? Bool ?? false
-      let isQualityCheck = args["isQualityCheck"] as? Bool ?? false
-      let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
-      
-      guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
-        result(FlutterError(code: "NO_VIEW_CONTROLLER",
-                           message: "Could not find root view controller",
-                           details: nil))
-        return
-      }
-      
-      pendingResult = result
-      wiseAiApp?.delegate = delegateHandler
-      wiseAiApp?.performEkyc(isQualityCheck: isQualityCheck,
-                            isEncrypt: isEncrypt,
-                            isActiveLiveness: isActiveLiveness,
-                            isExportDoc: isExportDoc,
-                            isExportFace: isExportFace)
-      
-    case "performPassportEkyc":
-      guard let args = call.arguments as? [String: Any] else {
-        result(FlutterError(code: "ARG_ERROR",
-                           message: "Arguments are required",
-                           details: nil))
-        return
-      }
-      
-      let isExportDoc = args["isExportDoc"] as? Bool ?? false
-      let isExportFace = args["isExportFace"] as? Bool ?? false
-      let isEncrypt = args["isEncrypt"] as? Bool ?? false
-      let isNFC = args["isNFC"] as? Bool ?? false
-      let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
-      
-      guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
-        result(FlutterError(code: "NO_VIEW_CONTROLLER",
-                           message: "Could not find root view controller",
-                           details: nil))
-        return
-      }
-      
-      pendingResult = result
-      wiseAiApp?.delegate = delegateHandler
-      wiseAiApp?.performPassportEkyc(isEncrypt: isEncrypt,
-                                     isNFC: isNFC,
-                                     isActiveLiveness: isActiveLiveness,
-                                     isExportDoc: isExportDoc,
-                                     isExportFace: isExportFace)
-      
-    case "performEkycForCountry":
-      guard let args = call.arguments as? [String: Any],
-            let countryCode = args["countryCode"] as? String,
-            let idType = args["idType"] as? String else {
-        result(FlutterError(code: "ARG_ERROR",
-                           message: "countryCode and idType are required",
-                           details: nil))
-        return
-      }
-      
-      let isExportDoc = args["isExportDoc"] as? Bool ?? false
-      let isExportFace = args["isExportFace"] as? Bool ?? false
-      let isEncrypt = args["isEncrypt"] as? Bool ?? false
-      let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
-      
-      guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
-        result(FlutterError(code: "NO_VIEW_CONTROLLER",
-                           message: "Could not find root view controller",
-                           details: nil))
-        return
-      }
-      
-      pendingResult = result
-      wiseAiApp?.delegate = delegateHandler
-      wiseAiApp?.performEkycForCountry(isEncrypt: isEncrypt,
-                                       countryCode: countryCode,
-                                       IDType: idType,
-                                       isActiveLiveness: isActiveLiveness,
-                                       isExportDoc: isExportDoc,
-                                       isExportFace: isExportFace)
-      
-    case "decryptResult":
-      guard let args = call.arguments as? [String: Any],
-            let encryptedJson = args["encryptedJson"] as? String,
-            let encryptionConfigJson = args["encryptionConfig"] as? String else {
-        result(FlutterError(code: "ARG_ERROR",
-                           message: "encryptedJson and encryptionConfig are required",
-                           details: nil))
-        return
-      }
-      
-      guard let wiseAiApp = wiseAiApp else {
-        result(FlutterError(code: "SDK_NOT_INITIALIZED",
-                           message: "WiseAI SDK not initialized. Call initSDK first.",
-                           details: nil))
-        return
-      }
-      
-      // Parse encryption config from JSON string to dictionary
-      guard let configData = encryptionConfigJson.data(using: .utf8),
-            let configDict = try? JSONSerialization.jsonObject(with: configData, options: []) as? [String: Any] else {
-        result(FlutterError(code: "INVALID_CONFIG",
-                           message: "Invalid encryption config JSON",
-                           details: nil))
-        return
-      }
-      
-      // Perform decryption using the SDK's decryptResult method
-      wiseAiApp.delegate = delegateHandler
-      let decryptedResult = wiseAiApp.decryptResult(encryptedResult: encryptedJson, encryptionConfig: configDict)
-      
-      // Return both encrypted and decrypted results
-      result([
-        "encryptedResult": encryptedJson,
-        "decryptedResult": decryptedResult ?? ""
-      ])
-      
+    case "performPassportNFCEkyc":
+      performPassportNFCEkyc(args: args)
+      result(nil)
+    case "performFaceVerify":
+      performFaceVerify(args: args)
+      result(nil)
     default:
       result(FlutterMethodNotImplemented)
     }
   }
-  
+
+  // MARK: - SDK Operations
+
+  private func performMykadEkyc(args: [String: Any]) {
+    let apiToken = args["apiToken"] as? String ?? ""
+    let apiURL = args["apiURL"] as? String ?? ""
+    let language = args["language"] as? String ?? "EN"
+    let isEncrypt = args["isEncrypt"] as? Bool ?? false
+
+    wiseAiApp = WiseAiApp(ekycApiToken: apiToken, ekycApiURL: apiURL)
+    // or initialize SDK with extraParam
+    // let extraParam = buildExtraParamJson(args["extraParam"] as? [String: String])
+    // wiseAiApp = WiseAiApp(ekycApiToken: apiToken, ekycApiURL: apiURL, extraParam: extraParam)
+    wiseAiApp?.delegate = delegateHandler
+    wiseAiApp?.setLanguage(language)
+    wiseAiApp?.performEkyc(isEncrypt: isEncrypt)
+  }
+
+  private func performPassportNFCEkyc(args: [String: Any]) {
+    let apiToken = args["apiToken"] as? String ?? ""
+    let apiURL = args["apiURL"] as? String ?? ""
+    let language = args["language"] as? String ?? "EN"
+    let isNFC = args["isNFC"] as? Bool ?? false
+    let isEncrypt = args["isEncrypt"] as? Bool ?? false
+
+    wiseAiApp = WiseAiApp(ekycApiToken: apiToken, ekycApiURL: apiURL)
+    // or initialize SDK with extraParam
+    // let extraParam = buildExtraParamJson(args["extraParam"] as? [String: String])
+    // wiseAiApp = WiseAiApp(ekycApiToken: apiToken, ekycApiURL: apiURL, extraParam: extraParam)
+    wiseAiApp?.delegate = delegateHandler
+    wiseAiApp?.setLanguage(language)
+    wiseAiApp?.performPassportEkyc(isEncrypt: isEncrypt, isNFC: isNFC)
+  }
+
+  private func performFaceVerify(args: [String: Any]) {
+    let apiToken = args["apiToken"] as? String ?? ""
+    let apiURL = args["apiURL"] as? String ?? ""
+    let language = args["language"] as? String ?? "EN"
+    let isExportFace = args["isExportFace"] as? Bool ?? false
+    let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
+    let isEncrypt = args["isEncrypt"] as? Bool ?? false
+
+    guard let faceImageBase64 = args["faceImageBase64"] as? String else {
+      sendBridgeError("Face Verify: faceImageBase64 is required")
+      return
+    }
+    guard let rawBinaryImageData = Data(base64Encoded: faceImageBase64) else {
+      sendBridgeError("Face Verify: failed to decode base64 image")
+      return
+    }
+
+    wiseAiApp = WiseAiApp(ekycApiToken: apiToken, ekycApiURL: apiURL)
+    wiseAiApp?.delegate = delegateHandler
+    wiseAiApp?.faceVerifyDelegate = delegateHandler
+    wiseAiApp?.setLanguage(language)
+    wiseAiApp?.performImageFaceVerify(
+      rawBinaryImageData: rawBinaryImageData,
+      isExportFace: isExportFace,
+      isActiveLiveness: isActiveLiveness,
+      isEncrypt: isEncrypt
+    )
+  }
+
+  // MARK: - Helpers
+
+  private func buildExtraParamJson(_ map: [String: String]?) -> String {
+    guard let map = map,
+          let data = try? JSONSerialization.data(withJSONObject: map),
+          let str = String(data: data, encoding: .utf8) else {
+      return "{}"
+    }
+    return str
+  }
+
+  /// Decrypt if encrypted; on any failure, return the original string so the
+  /// caller still has something with sessionId to forward. Never throws.
+  private func decryptIfNeeded(_ result: String) -> String {
+    guard let decrypted = wiseAiApp?.decryptResult(encryptedResult: result, encryptionConfig: encryptionConfig),
+          !decrypted.isEmpty,
+          decrypted != "Failed to decrypt data." else {
+      return result
+    }
+    return decrypted
+  }
+
+  private func storeEncryptionConfig(from sessionData: Any) {
+    if let configDict = sessionData as? [String: Any],
+       let config = configDict["encryptionConfig"] as? [String: String] {
+      encryptionConfig = config
+      return
+    }
+    if let jsonString = sessionData as? String,
+       let data = jsonString.data(using: .utf8),
+       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+       let config = json["encryptionConfig"] as? [String: String] {
+      encryptionConfig = config
+    }
+  }
+
+  // MARK: - Event Senders (the ONLY three exits to Flutter)
+
+  private func sendSdkResult(_ rawData: String) { sendEvent(source: "sdk", rawData: rawData) }
+  private func sendCancelled()                  { sendEvent(source: "cancelled", rawData: "") }
+  private func sendBridgeError(_ message: String) {
+    print("[WiseAiBridge] bridgeError: \(message)")
+    sendEvent(source: "bridgeError", rawData: message)
+  }
+
+  private func sendEvent(source: String, rawData: String) {
+    guard let sink = eventSink else {
+      print("[WiseAiBridge] eventSink is nil — dropping event source=\(source)")
+      return
+    }
+    sink(["source": source, "rawData": rawData])
+  }
+
   // MARK: - Internal delegate callback handlers
-  
-  func handleEkycComplete(_ jsonResult: String) {
-    guard let pendingResult = self.pendingResult else { return }
-    
-    // If we have encryption config, decrypt the result automatically
-    if let encryptionConfig = self.encryptionConfig,
-       let wiseAiApp = self.wiseAiApp {
-      
-      // Decrypt the encrypted result
-      let decryptedResult = wiseAiApp.decryptResult(encryptedResult: jsonResult, encryptionConfig: encryptionConfig)
-      
-      // Return both encrypted and decrypted results
-      var response: [String: Any] = [
-        "encryptedResult": jsonResult,
-        "decryptedResult": decryptedResult ?? ""
-      ]
-      
-      // Also parse the decrypted JSON if possible for convenience
-      if let decryptedResult = decryptedResult,
-         let data = decryptedResult.data(using: .utf8),
-         let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-        response["decryptedData"] = json
-      }
-      
-      pendingResult(response)
-    } else {
-      // No encryption - parse JSON string to dictionary directly
-      if let data = jsonResult.data(using: .utf8),
-         let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-        pendingResult(json)
-      } else {
-        // If parsing fails, return the raw string
-        pendingResult(["result": jsonResult])
-      }
-    }
-    
-    self.pendingResult = nil
+  //
+  // Called by WiseAiDelegateHandler (not exposed to Objective-C). Not
+  // `private` — a sibling class in this file needs to call these.
+
+  func handleSessionIdAndEncryptionConfig(_ sessionIdAndEncryptionConfig: String) {
+    storeEncryptionConfig(from: sessionIdAndEncryptionConfig)
   }
-  
-  func handleEkycException(_ jsonResult: String) {
-    guard let pendingResult = self.pendingResult else { return }
-    
-    pendingResult(FlutterError(code: "EKYC_FAILED",
-                               message: "eKYC process failed",
-                               details: jsonResult))
-    self.pendingResult = nil
+
+  func handleEkycComplete(_ jsonResult: String)  { sendSdkResult(decryptIfNeeded(jsonResult)) }
+  func handleEkycException(_ jsonResult: String) { sendSdkResult(jsonResult) }
+  func handleEkycCancelled()                     { sendCancelled() }
+
+  func handleFaceVerifySessionIdAndEncryptionConfig(_ sessionIdAndEncryptionConfig: String) {
+    storeEncryptionConfig(from: sessionIdAndEncryptionConfig)
   }
-  
-  func handleEkycCancelled() {
-    guard let pendingResult = self.pendingResult else { return }
-    
-    pendingResult(FlutterError(code: "USER_CANCELLED",
-                               message: "User cancelled eKYC process",
-                               details: nil))
-    self.pendingResult = nil
+
+  func handleFaceVerifyComplete(_ jsonResult: String)  { sendSdkResult(decryptIfNeeded(jsonResult)) }
+  func handleFaceVerifyException(_ jsonResult: String) { sendSdkResult(jsonResult) }
+  func handleFaceVerifyCancelled()                     { sendCancelled() }
+
+  // MARK: - FlutterStreamHandler
+
+  public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+    self.eventSink = events
+    return nil
   }
-  
-  func handleSessionIdAndEncryptionConfig(_ sessionIDandConfig: String) {
-    // This delegate method is called after startNewSession
-    guard let pendingResult = self.pendingSessionResult else { return }
-    
-    // Parse the session data to extract sessionId and encryption config
-    if let data = sessionIDandConfig.data(using: .utf8),
-       let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-       let sessionId = json["sessionId"] as? String {
-      
-      // Store encryption config if present for auto-decryption
-      if let config = json["encryptionConfig"] as? [String: Any] {
-        self.encryptionConfig = config
-      }
-      
-      // Return structured response with explicit sessionId (matching Android format)
-      pendingResult([
-        "sessionId": sessionId,
-        "fullData": sessionIDandConfig
-      ])
-    } else {
-      // Fallback: return raw data if parsing fails
-      pendingResult([
-        "fullData": sessionIDandConfig
-      ])
-    }
-    
-    self.pendingSessionResult = nil
+
+  public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+    self.eventSink = nil
+    return nil
   }
 }

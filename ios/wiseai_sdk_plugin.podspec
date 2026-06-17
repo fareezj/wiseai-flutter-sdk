@@ -16,8 +16,7 @@ A new Flutter plugin project.
   s.source_files     = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'GoogleMLKit/FaceDetection', '6.0.0'
-  s.platform = :ios, '13.0'
+  s.platform = :ios, '15.0'
   
   # WiseAI SDK Framework
   s.vendored_frameworks = 'WiseAISDK.framework', 'OpenSSL.framework', 'DecodeJPEG2000objc.framework'

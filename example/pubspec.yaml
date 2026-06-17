@@ -30,6 +30,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # Used by the Face Verify demo page to pick a reference image.
+  image_picker: ^1.2.0
+
 dev_dependencies:
   integration_test:
     sdk: flutter

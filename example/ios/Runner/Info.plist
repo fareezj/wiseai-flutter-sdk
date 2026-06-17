@@ -47,5 +47,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera is required for eKYC verification</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access is required to select a reference image for Face Verify</string>
+	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+	<array>
+		<string>A0000002471001</string>
+		<string>A0000002472001</string>
+	</array>
 </dict>
 </plist>

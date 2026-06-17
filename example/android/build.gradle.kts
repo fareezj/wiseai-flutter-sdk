@@ -10,6 +10,16 @@ allprojects {
                 password = "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"
             }
         }
+        // Required to resolve WiseAiFaceVerify, a transitive dependency of
+        // com.wiseai.ekyc:app pulled in for the Face Verify flow.
+        maven {
+            name = "GitHubPackages-face-verify"
+            url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110-face-verify")
+            credentials {
+                username = "WiseAI-Tech"
+                password = "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"
+            }
+        }
         maven { url = uri("https://developer.huawei.com/repo/") }
     }
 }
