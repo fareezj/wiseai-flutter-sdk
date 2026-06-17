@@ -113,7 +113,7 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     // wiseAiApp = WiseAiApp(ekycApiToken: apiToken, ekycApiURL: apiURL, extraParam: extraParam)
     wiseAiApp?.delegate = delegateHandler
     wiseAiApp?.setLanguage(language)
-    wiseAiApp?.performEkyc(isEncrypt: isEncrypt)
+    wiseAiApp?.performEkyc(isEncrypt: isEncrypt, isActiveLiveness: true)
   }
 
   private func performPassportNFCEkyc(args: [String: Any]) {
