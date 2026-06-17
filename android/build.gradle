@@ -19,7 +19,7 @@ allprojects {
         google()
         mavenCentral()
         maven {
-            name = "GitHubPackages"
+            name = "GitHubPackages-ekyc"
             url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110")
             credentials {
                 username = "WiseAI-Tech"
