@@ -7,7 +7,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110")
             credentials {
                 username = "WiseAI-Tech"
-                password = "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"
+                password = "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"
             }
         }
         // Required to resolve WiseAiFaceVerify, a transitive dependency of
@@ -17,7 +17,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110-face-verify")
             credentials {
                 username = "WiseAI-Tech"
-                password = "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"
+                password = "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"
             }
         }
         maven { url = uri("https://developer.huawei.com/repo/") }

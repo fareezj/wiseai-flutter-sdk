@@ -23,7 +23,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110")
             credentials {
                 username = "WiseAI-Tech"
-                password = "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"
+                password = "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"
             }
         }
         // Required to resolve WiseAiFaceVerify, a transitive dependency of
@@ -33,7 +33,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/WiseAI-Tech/ekyc110-face-verify")
             credentials {
                 username = "WiseAI-Tech"
-                password = "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"
+                password = "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"
             }
         }
         maven { url "https://developer.huawei.com/repo/" }
@@ -68,7 +68,7 @@ android {
     }
 
     dependencies {
-        implementation ("com.wiseai.ekyc:app:3.0.2")
+        implementation ("com.wiseai.ekyc:app:3.0.1")
         implementation ("com.google.code.gson:gson:2.10")
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
