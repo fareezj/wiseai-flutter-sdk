@@ -49,9 +49,8 @@ class _MyKadResultPageState extends State<MyKadResultPage> {
             //extraParam: extraParam,
           )
         : IosMyKadEkycConfig(
-            apiToken:
-                "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ3aXNlYWkiLCJzdWIiOiJ3aXNlYWktYXBpIiwiaWQiOiIzNzIiLCJubSI6Ik15S2FkIGVLWUMiLCJtaXNjIjoiIiwidmVyIjozfQ.fVufFcKGWzfrpIz2QJZMIQ0qXqwlw_IjJpnYz5c4jkU",
-            apiURL: "https://wiseconsole-demo.wiseai.tech/",
+            apiToken: "YOUR_API_TOKEN",
+            apiURL: "YOUR_API_URL",
             language: widget.language,
             isEncrypt: false,
             isExportFace: true,
