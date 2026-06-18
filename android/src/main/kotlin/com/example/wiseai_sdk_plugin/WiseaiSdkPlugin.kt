@@ -186,6 +186,7 @@ class WiseaiSdkPlugin :
             putExtra("CAMERA_FACING", "FRONT")
             putExtra("IF_ENCRYPTION", ifEncryption)
             putExtra("LANGUAGE_CODE", language)
+            putExtra("ACTIVATE_ACTIVE_LIVENESS", true)
         }
 
         WiseAiApp.startNewSession(ifEncryption, object : SessionCallback {
