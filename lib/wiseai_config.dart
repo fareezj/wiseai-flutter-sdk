@@ -79,6 +79,7 @@ class IosMyKadEkycConfig extends MyKadEkycConfig {
   final bool isEncrypt;
   final bool isExportFace;
   final bool isExportDoc;
+  final bool isActiveLiveness;
 
   const IosMyKadEkycConfig({
     required super.apiToken,
@@ -88,6 +89,7 @@ class IosMyKadEkycConfig extends MyKadEkycConfig {
     this.isEncrypt = false,
     this.isExportFace = true,
     this.isExportDoc = false,
+    this.isActiveLiveness = false,
   });
 
   IosMyKadEkycConfig copyWith({
@@ -98,6 +100,7 @@ class IosMyKadEkycConfig extends MyKadEkycConfig {
     bool? isEncrypt,
     bool? isExportFace,
     bool? isExportDoc,
+    bool? isActiveLiveness,
   }) {
     return IosMyKadEkycConfig(
       apiToken: apiToken ?? this.apiToken,
@@ -107,6 +110,7 @@ class IosMyKadEkycConfig extends MyKadEkycConfig {
       isEncrypt: isEncrypt ?? this.isEncrypt,
       isExportFace: isExportFace ?? this.isExportFace,
       isExportDoc: isExportDoc ?? this.isExportDoc,
+      isActiveLiveness: isActiveLiveness ?? this.isActiveLiveness,
     );
   }
 }

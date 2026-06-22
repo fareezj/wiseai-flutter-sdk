@@ -79,6 +79,7 @@ class WiseaiSdkPlugin {
       args['isEncrypt'] = config.isEncrypt;
       args['isExportFace'] = config.isExportFace;
       args['isExportDoc'] = config.isExportDoc;
+      args['isActiveLiveness'] = config.isActiveLiveness;
     }
     return args;
   }
