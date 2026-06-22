@@ -106,6 +106,9 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     let apiURL = args["apiURL"] as? String ?? ""
     let language = args["language"] as? String ?? "EN"
     let isEncrypt = args["isEncrypt"] as? Bool ?? false
+    let isExportFace = args["isExportFace"] as? Bool ?? false
+    let isExportDoc = args["isExportDoc"] as? Bool ?? false
+    let isActiveLiveness = args["isActiveLiveness"] as? Bool ?? false
 
     wiseAiApp = WiseAiApp(ekycApiToken: apiToken, ekycApiURL: apiURL)
     // or initialize SDK with extraParam
@@ -113,7 +116,12 @@ public class WiseaiSdkPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     // wiseAiApp = WiseAiApp(ekycApiToken: apiToken, ekycApiURL: apiURL, extraParam: extraParam)
     wiseAiApp?.delegate = delegateHandler
     wiseAiApp?.setLanguage(language)
-    wiseAiApp?.performEkyc(isEncrypt: isEncrypt, isActiveLiveness: true)
+    wiseAiApp?.performEkyc(
+      isEncrypt: isEncrypt,
+      isActiveLiveness: isActiveLiveness,
+      isExportDoc: isExportDoc,
+      isExportFace: isExportFace
+    )
   }
 
   private func performPassportNFCEkyc(args: [String: Any]) {

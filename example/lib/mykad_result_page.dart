@@ -45,16 +45,18 @@ class _MyKadResultPageState extends State<MyKadResultPage> {
             language: widget.language,
             isEncrypt: false,
             isExportFace: true,
+            isExportDoc: true,
             isActiveLiveness: false,
             //extraParam: extraParam,
           )
         : IosMyKadEkycConfig(
-            apiToken: "YOUR_API_TOKEN",
-            apiURL: "YOUR_API_URL",
+            apiToken:
+                "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ3aXNlYWkiLCJzdWIiOiJ3aXNlYWktYXBpIiwiaWQiOiIzNzIiLCJubSI6Ik15S2FkIGVLWUMiLCJtaXNjIjoiIiwidmVyIjozfQ.fVufFcKGWzfrpIz2QJZMIQ0qXqwlw_IjJpnYz5c4jkU",
+            apiURL: "https://wiseconsole-demo.wiseai.tech/",
             language: widget.language,
             isEncrypt: false,
-            isExportFace: true,
-            isExportDoc: false,
+            isExportFace: false,
+            isExportDoc: true,
             //extraParam: extraParam,
           );
     _wiseaiSdkPlugin.performEkyc(config);
@@ -336,6 +338,9 @@ class _MyKadResultPageState extends State<MyKadResultPage> {
               'Face Matching Score',
               '${(matching!['confidence'] as num).toStringAsFixed(2)}%',
             ),
+          const Divider(),
+          const SizedBox(height: 10),
+          _buildAttachmentsSection(result),
           const SizedBox(height: 30),
           ExpansionTile(
             title: const Text(
@@ -355,6 +360,79 @@ class _MyKadResultPageState extends State<MyKadResultPage> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAttachmentsSection(EkycResult result) {
+    final attachments = result.attachments;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Backend Attachments',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        if (attachments.isEmpty)
+          Text(
+            'No document attachments. Enable isExportDoc and ensure '
+            'documentImageBase64 is present in the SDK response.',
+            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+          )
+        else
+          ...attachments.map(_buildAttachmentCard),
+      ],
+    );
+  }
+
+  Widget _buildAttachmentCard(EkycAttachment attachment) {
+    final backendMap = attachment.toBackendMap();
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              attachment.attachType.label,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            _buildInfoRow('AttachType', backendMap['AttachType']),
+            _buildInfoRow('FileName', backendMap['FileName']),
+            _buildInfoRow('FileType', backendMap['FileType']),
+            _buildInfoRow('FileSize', backendMap['FileSize']),
+            const SizedBox(height: 10),
+            _buildImageSection(attachment.fileContent, 'Preview'),
+            ExpansionTile(
+              title: const Text('Backend Payload (FileContent truncated)'),
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  color: Colors.grey[900],
+                  child: SelectableText(
+                    _formatJson(
+                      jsonEncode({
+                        ...backendMap,
+                        'FileContent':
+                            '${attachment.fileContent.substring(0, attachment.fileContent.length.clamp(0, 80))}...',
+                      }),
+                    ),
+                    style: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

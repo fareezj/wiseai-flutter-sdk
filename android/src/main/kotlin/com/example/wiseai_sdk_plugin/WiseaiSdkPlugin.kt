@@ -170,6 +170,9 @@ class WiseaiSdkPlugin :
         val apiURL = args["apiURL"] as? String ?: ""
         val language = args["language"] as? String ?: "EN"
         ifEncryption = args["isEncrypt"] as? Boolean ?: false
+        val isExportFace = args["isExportFace"] as? Boolean ?: true
+        val isExportDoc = args["isExportDoc"] as? Boolean ?: false
+        val isActiveLiveness = args["isActiveLiveness"] as? Boolean ?: false
         val extraParamMap = args["extraParam"] as? Map<String, String>
 
         val extraParam = JsonObject()
@@ -182,11 +185,12 @@ class WiseaiSdkPlugin :
         val intent = Intent(currentActivity, Ekyc::class.java).apply {
             putExtra("COUNTRY_CODE", "MYS")
             putExtra("ID_TYPE", "ID")
-            putExtra("EXPORT_FACE", true)
+            putExtra("EXPORT_FACE", isExportFace)
+            putExtra("EXPORT_DOC", isExportDoc)
             putExtra("CAMERA_FACING", "FRONT")
             putExtra("IF_ENCRYPTION", ifEncryption)
             putExtra("LANGUAGE_CODE", language)
-            putExtra("ACTIVATE_ACTIVE_LIVENESS", true)
+            putExtra("ACTIVATE_ACTIVE_LIVENESS", isActiveLiveness)
         }
 
         WiseAiApp.startNewSession(ifEncryption, object : SessionCallback {

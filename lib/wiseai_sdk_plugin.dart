@@ -4,10 +4,12 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import 'ekyc_attachment.dart';
 import 'ekyc_result.dart';
 import 'wiseai_config.dart';
 import 'wiseai_sdk_plugin_platform_interface.dart';
 
+export 'ekyc_attachment.dart';
 export 'ekyc_result.dart';
 export 'wiseai_config.dart';
 
@@ -71,6 +73,7 @@ class WiseaiSdkPlugin {
     if (config is AndroidMyKadEkycConfig) {
       args['isEncrypt'] = config.isEncrypt;
       args['isExportFace'] = config.isExportFace;
+      args['isExportDoc'] = config.isExportDoc;
       args['isActiveLiveness'] = config.isActiveLiveness;
     } else if (config is IosMyKadEkycConfig) {
       args['isEncrypt'] = config.isEncrypt;
@@ -195,6 +198,7 @@ class WiseaiSdkPlugin {
       sessionId: sessionId,
       rawData: rawData,
       parsed: parsed,
+      attachments: extractMykadAttachments(parsed),
     ));
   }
 

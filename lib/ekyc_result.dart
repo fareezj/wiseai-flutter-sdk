@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'ekyc_attachment.dart';
+
 /// Outcome of an eKYC / Face Verify flow. Pattern-match on [status].
 ///
 /// `success` — SDK returned a successful result. `rawData` holds the full SDK
@@ -28,6 +30,7 @@ class EkycResult {
   final String? errorMessage;
   final String rawData;
   final Map<String, dynamic>? parsed;
+  final List<EkycAttachment> attachments;
 
   const EkycResult({
     required this.status,
@@ -36,6 +39,7 @@ class EkycResult {
     this.errorCode,
     this.errorMessage,
     this.parsed,
+    this.attachments = const [],
   });
 
   bool get isSuccess => status == EkycStatus.success;

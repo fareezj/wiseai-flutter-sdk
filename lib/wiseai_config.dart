@@ -36,6 +36,7 @@ abstract class MyKadEkycConfig extends WiseAIConfig {
 class AndroidMyKadEkycConfig extends MyKadEkycConfig {
   final bool isEncrypt;
   final bool isExportFace;
+  final bool isExportDoc;
   final bool isActiveLiveness;
 
   const AndroidMyKadEkycConfig({
@@ -45,6 +46,7 @@ class AndroidMyKadEkycConfig extends MyKadEkycConfig {
     super.extraParam,
     this.isEncrypt = false,
     this.isExportFace = true,
+    this.isExportDoc = false,
     this.isActiveLiveness = false,
   });
 
@@ -55,6 +57,7 @@ class AndroidMyKadEkycConfig extends MyKadEkycConfig {
     Map<String, String>? extraParam,
     bool? isEncrypt,
     bool? isExportFace,
+    bool? isExportDoc,
     bool? isActiveLiveness,
   }) {
     return AndroidMyKadEkycConfig(
@@ -64,6 +67,7 @@ class AndroidMyKadEkycConfig extends MyKadEkycConfig {
       extraParam: extraParam ?? this.extraParam,
       isEncrypt: isEncrypt ?? this.isEncrypt,
       isExportFace: isExportFace ?? this.isExportFace,
+      isExportDoc: isExportDoc ?? this.isExportDoc,
       isActiveLiveness: isActiveLiveness ?? this.isActiveLiveness,
     );
   }
