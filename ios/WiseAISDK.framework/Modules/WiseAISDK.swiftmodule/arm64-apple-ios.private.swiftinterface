@@ -42,19 +42,22 @@ import _SwiftConcurrencyShims
   @objc public init(ekycApiToken: Swift.String, ekycApiURL: Swift.String)
   @objc public init(ekycApiToken: Swift.String, ekycApiURL: Swift.String, extraParam: Swift.String)
   #if compiler(>=5.3) && $NonescapableTypes
-  @objc public func performEkyc(isQualityCheck: Swift.Bool = true, isEncrypt: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, completion: (() -> Swift.Void)? = nil)
+  @objc public func performEkyc(isQualityCheck: Swift.Bool = true, isEncrypt: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
-  @objc public func performPassportEkyc(isQualityCheck: Swift.Bool = false, isEncrypt: Swift.Bool = false, isNFC: Swift.Bool = false, isPreview: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, completion: (() -> Swift.Void)? = nil)
+  @objc public func performPassportEkyc(isQualityCheck: Swift.Bool = false, isEncrypt: Swift.Bool = false, isNFC: Swift.Bool = false, isPreview: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
-  @objc public func performOtherIDEkyc(isQualityCheck: Swift.Bool = false, isEncrypt: Swift.Bool = false, countryCode: Swift.String, idType: Swift.String, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, completion: (() -> Swift.Void)? = nil)
+  @objc public func performOtherIDEkyc(isQualityCheck: Swift.Bool = false, isEncrypt: Swift.Bool = false, countryCode: Swift.String, idType: Swift.String, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
-  @objc public func performImageFaceVerify(rawBinaryImageData: Foundation.Data, isExportFace: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isEncrypt: Swift.Bool = false, completion: (() -> Swift.Void)? = nil)
+  @objc public func performImageFaceVerify(rawBinaryImageData: Foundation.Data, isExportFace: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isEncrypt: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
   @objc public func performOcrOnly(ekycType: Swift.String = "mykad", isQualityCheck: Swift.Bool = true, isEncrypt: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, completion: (() -> Swift.Void)? = nil)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc public func performGeneralOCREkyc(isQualityCheck: Swift.Bool = true, isEncrypt: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, completion: (() -> Swift.Void)? = nil)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
   @objc public func decryptResult(encryptedResult: Swift.String, encryptionConfig: Swift.Dictionary<Swift.String, Any>) -> Swift.String?
