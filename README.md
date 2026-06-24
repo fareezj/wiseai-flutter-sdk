@@ -5,7 +5,7 @@ A Flutter plugin wrapping the native WiseAI eKYC / Face Verify SDKs (Android & i
 ## Requirements
 
 - Android: `minSdk 28` (required by WiseAI SDK 3.x)
-- iOS: `15.0` (required by `WiseAISDK.framework` 3.0.1)
+- iOS: `15.0` (required by `WiseAISDK.framework` 3.0.4)
 - Camera permission (both platforms); NFC entitlement + permission for Passport NFC eKYC.
 
 ## Usage
