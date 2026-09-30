@@ -6,8 +6,13 @@ import 'package:wiseai_sdk_plugin/wiseai_sdk_plugin.dart';
 
 class MyKadResultPage extends StatefulWidget {
   final String language;
+  final bool isMykad2026;
 
-  const MyKadResultPage({super.key, required this.language});
+  const MyKadResultPage({
+    super.key,
+    required this.language,
+    this.isMykad2026 = false,
+  });
 
   @override
   State<MyKadResultPage> createState() => _MyKadResultPageState();
@@ -47,6 +52,7 @@ class _MyKadResultPageState extends State<MyKadResultPage> {
             isExportFace: true,
             isExportDoc: true,
             isActiveLiveness: false,
+            isMykad2026: widget.isMykad2026,
             //extraParam: extraParam,
           )
         : IosMyKadEkycConfig(
@@ -56,6 +62,7 @@ class _MyKadResultPageState extends State<MyKadResultPage> {
             isEncrypt: false,
             isExportFace: false,
             isExportDoc: true,
+            isMykad2026: widget.isMykad2026,
             //extraParam: extraParam,
           );
     _wiseaiSdkPlugin.performEkyc(config);

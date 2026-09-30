@@ -61,6 +61,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
+                    builder: (context) => MyKadResultPage(
+                      language: _language,
+                      isMykad2026: true,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Start New MyKad EKYC'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
                     builder: (context) =>
                         PassportResultPage(language: _language),
                   ),

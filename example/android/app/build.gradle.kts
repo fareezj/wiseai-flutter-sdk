@@ -32,6 +32,13 @@ android {
         multiDexEnabled = true
     }
 
+    packaging {
+        resources {
+            // jspecify and BouncyCastle (pulled in by the WiseAI SDK) each ship this file.
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

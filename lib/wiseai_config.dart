@@ -39,6 +39,9 @@ class AndroidMyKadEkycConfig extends MyKadEkycConfig {
   final bool isExportDoc;
   final bool isActiveLiveness;
 
+  /// Use the 2026 New MyKad flow (sends ID_TYPE = MYKAD_2026).
+  final bool isMykad2026;
+
   const AndroidMyKadEkycConfig({
     required super.apiToken,
     required super.apiURL,
@@ -48,6 +51,7 @@ class AndroidMyKadEkycConfig extends MyKadEkycConfig {
     this.isExportFace = true,
     this.isExportDoc = false,
     this.isActiveLiveness = false,
+    this.isMykad2026 = false,
   });
 
   AndroidMyKadEkycConfig copyWith({
@@ -59,6 +63,7 @@ class AndroidMyKadEkycConfig extends MyKadEkycConfig {
     bool? isExportFace,
     bool? isExportDoc,
     bool? isActiveLiveness,
+    bool? isMykad2026,
   }) {
     return AndroidMyKadEkycConfig(
       apiToken: apiToken ?? this.apiToken,
@@ -69,6 +74,7 @@ class AndroidMyKadEkycConfig extends MyKadEkycConfig {
       isExportFace: isExportFace ?? this.isExportFace,
       isExportDoc: isExportDoc ?? this.isExportDoc,
       isActiveLiveness: isActiveLiveness ?? this.isActiveLiveness,
+      isMykad2026: isMykad2026 ?? this.isMykad2026,
     );
   }
 }
@@ -81,6 +87,9 @@ class IosMyKadEkycConfig extends MyKadEkycConfig {
   final bool isExportDoc;
   final bool isActiveLiveness;
 
+  /// Use the 2026 New MyKad flow (calls performNewMykadEkyc).
+  final bool isMykad2026;
+
   const IosMyKadEkycConfig({
     required super.apiToken,
     required super.apiURL,
@@ -90,6 +99,7 @@ class IosMyKadEkycConfig extends MyKadEkycConfig {
     this.isExportFace = true,
     this.isExportDoc = false,
     this.isActiveLiveness = false,
+    this.isMykad2026 = false,
   });
 
   IosMyKadEkycConfig copyWith({
@@ -101,6 +111,7 @@ class IosMyKadEkycConfig extends MyKadEkycConfig {
     bool? isExportFace,
     bool? isExportDoc,
     bool? isActiveLiveness,
+    bool? isMykad2026,
   }) {
     return IosMyKadEkycConfig(
       apiToken: apiToken ?? this.apiToken,
@@ -111,6 +122,7 @@ class IosMyKadEkycConfig extends MyKadEkycConfig {
       isExportFace: isExportFace ?? this.isExportFace,
       isExportDoc: isExportDoc ?? this.isExportDoc,
       isActiveLiveness: isActiveLiveness ?? this.isActiveLiveness,
+      isMykad2026: isMykad2026 ?? this.isMykad2026,
     );
   }
 }

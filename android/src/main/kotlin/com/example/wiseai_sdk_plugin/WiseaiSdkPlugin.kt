@@ -173,6 +173,7 @@ class WiseaiSdkPlugin :
         val isExportFace = args["isExportFace"] as? Boolean ?: true
         val isExportDoc = args["isExportDoc"] as? Boolean ?: false
         val isActiveLiveness = args["isActiveLiveness"] as? Boolean ?: false
+        val isMykad2026 = args["isMykad2026"] as? Boolean ?: false
         val extraParamMap = args["extraParam"] as? Map<String, String>
 
         val extraParam = JsonObject()
@@ -184,7 +185,7 @@ class WiseaiSdkPlugin :
 
         val intent = Intent(currentActivity, Ekyc::class.java).apply {
             putExtra("COUNTRY_CODE", "MYS")
-            putExtra("ID_TYPE", "ID")
+            putExtra("ID_TYPE", if (isMykad2026) "MYKAD_2026" else "ID")
             putExtra("EXPORT_FACE", isExportFace)
             putExtra("EXPORT_DOC", isExportDoc)
             putExtra("CAMERA_FACING", "FRONT")

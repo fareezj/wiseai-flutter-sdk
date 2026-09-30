@@ -8,7 +8,7 @@
 
 ## SDK version & minimum Android version
 
-- WiseAI Android SDK: `com.wiseai.ekyc:app:3.0.2` ([android/build.gradle](android/build.gradle))
+- WiseAI Android SDK: `com.wiseai.ekyc:app:3.0.8` ([android/build.gradle](android/build.gradle))
 - `minSdk = 28` — required by SDK 3.x (the 2.7.x-era `minSdk = 24` requirement
   no longer applies)
 - Same `minSdk` is set in the example app

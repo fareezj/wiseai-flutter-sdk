@@ -75,11 +75,13 @@ class WiseaiSdkPlugin {
       args['isExportFace'] = config.isExportFace;
       args['isExportDoc'] = config.isExportDoc;
       args['isActiveLiveness'] = config.isActiveLiveness;
+      args['isMykad2026'] = config.isMykad2026;
     } else if (config is IosMyKadEkycConfig) {
       args['isEncrypt'] = config.isEncrypt;
       args['isExportFace'] = config.isExportFace;
       args['isExportDoc'] = config.isExportDoc;
       args['isActiveLiveness'] = config.isActiveLiveness;
+      args['isMykad2026'] = config.isMykad2026;
     }
     return args;
   }

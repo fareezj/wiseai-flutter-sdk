@@ -45,10 +45,16 @@ import _SwiftConcurrencyShims
   @objc public func performEkyc(isQualityCheck: Swift.Bool = true, isEncrypt: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
-  @objc public func performPassportEkyc(isQualityCheck: Swift.Bool = false, isEncrypt: Swift.Bool = false, isNFC: Swift.Bool = false, isPreview: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
+  @objc public func performNewMykadEkyc(isEncrypt: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc public func performPassportEkyc(isQualityCheck: Swift.Bool = false, isEncrypt: Swift.Bool = false, isNFC: Swift.Bool = false, isNFCSkippable: Swift.Bool = false, isPreview: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
   @objc public func performOtherIDEkyc(isQualityCheck: Swift.Bool = false, isEncrypt: Swift.Bool = false, countryCode: Swift.String, idType: Swift.String, isActiveLiveness: Swift.Bool = false, isExportDoc: Swift.Bool = false, isExportFace: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc public func performDocumentOcr(countryCode: Swift.String, idType: Swift.String, sessionId: Swift.String, completion: (() -> Swift.Void)? = nil)
   #endif
   #if compiler(>=5.3) && $NonescapableTypes
   @objc public func performImageFaceVerify(rawBinaryImageData: Foundation.Data, isExportFace: Swift.Bool = false, isActiveLiveness: Swift.Bool = false, isEncrypt: Swift.Bool = false, cameraFacing: AVFoundation.AVCaptureDevice.Position = .front, completion: (() -> Swift.Void)? = nil)
@@ -63,6 +69,9 @@ import _SwiftConcurrencyShims
   @objc public func decryptResult(encryptedResult: Swift.String, encryptionConfig: Swift.Dictionary<Swift.String, Any>) -> Swift.String?
   #endif
   @objc public func setLanguage(_ language: Swift.String)
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc public func setLanguageFile(_ filePath: Swift.String?)
+  #endif
   @objc deinit
 }
 @_hasMissingDesignatedInitializers @available(iOS 13, macOS 10.15, *)

@@ -720,13 +720,103 @@
           },
           {
             "kind": "Function",
-            "name": "performPassportEkyc",
-            "printedName": "performPassportEkyc(isQualityCheck:isEncrypt:isNFC:isPreview:isActiveLiveness:isExportDoc:isExportFace:cameraFacing:completion:)",
+            "name": "performNewMykadEkyc",
+            "printedName": "performNewMykadEkyc(isEncrypt:isActiveLiveness:isExportDoc:isExportFace:cameraFacing:completion:)",
             "children": [
               {
                 "kind": "TypeNominal",
                 "name": "Void",
                 "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "hasDefaultArg": true,
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "hasDefaultArg": true,
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "hasDefaultArg": true,
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "hasDefaultArg": true,
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Position",
+                "printedName": "AVFoundation.AVCaptureDevice.Position",
+                "hasDefaultArg": true,
+                "usr": "c:@E@AVCaptureDevicePosition"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(() -> ())?",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "() -> ()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      }
+                    ]
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@WiseAISDK@objc(cs)WiseAiApp(im)performNewMykadEkycWithIsEncrypt:isActiveLiveness:isExportDoc:isExportFace:cameraFacing:completion:",
+            "mangledName": "$s9WiseAISDK0A5AiAppC19performNewMykadEkyc9isEncrypt0I14ActiveLiveness0I9ExportDoc0iM4Face12cameraFacing10completionySb_S3bSo23AVCaptureDevicePositionVyycSgtF",
+            "moduleName": "WiseAISDK",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "performPassportEkyc",
+            "printedName": "performPassportEkyc(isQualityCheck:isEncrypt:isNFC:isNFCSkippable:isPreview:isActiveLiveness:isExportDoc:isExportFace:cameraFacing:completion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "hasDefaultArg": true,
+                "usr": "s:Sb"
               },
               {
                 "kind": "TypeNominal",
@@ -812,8 +902,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "c:@M@WiseAISDK@objc(cs)WiseAiApp(im)performPassportEkycWithIsQualityCheck:isEncrypt:isNFC:isPreview:isActiveLiveness:isExportDoc:isExportFace:cameraFacing:completion:",
-            "mangledName": "$s9WiseAISDK0A5AiAppC19performPassportEkyc14isQualityCheck0H7Encrypt0H3NFC0H7Preview0H14ActiveLiveness0H9ExportDoc0hP4Face12cameraFacing10completionySb_S6bSo23AVCaptureDevicePositionVyycSgtF",
+            "usr": "c:@M@WiseAISDK@objc(cs)WiseAiApp(im)performPassportEkycWithIsQualityCheck:isEncrypt:isNFC:isNFCSkippable:isPreview:isActiveLiveness:isExportDoc:isExportFace:cameraFacing:completion:",
+            "mangledName": "$s9WiseAISDK0A5AiAppC19performPassportEkyc14isQualityCheck0H7Encrypt0H3NFC0H12NFCSkippable0H7Preview0H14ActiveLiveness0H9ExportDoc0hQ4Face12cameraFacing10completionySb_S7bSo23AVCaptureDevicePositionVyycSgtF",
             "moduleName": "WiseAISDK",
             "declAttributes": [
               "AccessControl",
@@ -915,6 +1005,71 @@
             "declKind": "Func",
             "usr": "c:@M@WiseAISDK@objc(cs)WiseAiApp(im)performOtherIDEkycWithIsQualityCheck:isEncrypt:countryCode:idType:isActiveLiveness:isExportDoc:isExportFace:cameraFacing:completion:",
             "mangledName": "$s9WiseAISDK0A5AiAppC18performOtherIDEkyc14isQualityCheck0H7Encrypt11countryCode6idType0H14ActiveLiveness0H9ExportDoc0hR4Face12cameraFacing10completionySb_SbS2SS3bSo23AVCaptureDevicePositionVyycSgtF",
+            "moduleName": "WiseAISDK",
+            "declAttributes": [
+              "AccessControl",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "performDocumentOcr",
+            "printedName": "performDocumentOcr(countryCode:idType:sessionId:completion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(() -> ())?",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "() -> ()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      }
+                    ]
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@WiseAISDK@objc(cs)WiseAiApp(im)performDocumentOcrWithCountryCode:idType:sessionId:completion:",
+            "mangledName": "$s9WiseAISDK0A5AiAppC18performDocumentOcr11countryCode6idType9sessionId10completionySS_S2SyycSgtF",
             "moduleName": "WiseAISDK",
             "declAttributes": [
               "AccessControl",
@@ -1081,6 +1236,7 @@
             "moduleName": "WiseAISDK",
             "declAttributes": [
               "AccessControl",
+              "RawDocComment",
               "ObjC"
             ],
             "funcSelfKind": "NonMutating"
@@ -1242,6 +1398,41 @@
             "declKind": "Func",
             "usr": "c:@M@WiseAISDK@objc(cs)WiseAiApp(im)setLanguage:",
             "mangledName": "$s9WiseAISDK0A5AiAppC11setLanguageyySSF",
+            "moduleName": "WiseAISDK",
+            "declAttributes": [
+              "AccessControl",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "setLanguageFile",
+            "printedName": "setLanguageFile(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@WiseAISDK@objc(cs)WiseAiApp(im)setLanguageFile:",
+            "mangledName": "$s9WiseAISDK0A5AiAppC15setLanguageFileyySSSgF",
             "moduleName": "WiseAISDK",
             "declAttributes": [
               "AccessControl",
@@ -1676,6 +1867,30 @@
             "mangledName": "$ss9EscapableP"
           }
         ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK"
+      },
+      {
+        "kind": "Import",
+        "name": "AVFoundation",
+        "printedName": "AVFoundation",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK"
       },
       {
         "kind": "Import",
@@ -11210,6 +11425,30 @@
             "mangledName": "$ss9EscapableP"
           }
         ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK"
+      },
+      {
+        "kind": "Import",
+        "name": "AVFoundation",
+        "printedName": "AVFoundation",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK"
       },
       {
         "kind": "Import",
@@ -24069,13 +24308,6 @@
       },
       {
         "kind": "Import",
-        "name": "AVKit",
-        "printedName": "AVKit",
-        "declKind": "Import",
-        "moduleName": "WiseAISDK"
-      },
-      {
-        "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
@@ -24367,6 +24599,33 @@
       },
       {
         "kind": "Import",
+        "name": "AVFoundation",
+        "printedName": "AVFoundation",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
@@ -24404,6 +24663,23 @@
         "declAttributes": [
           "RawDocComment"
         ]
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "AVFoundation",
+        "printedName": "AVFoundation",
+        "declKind": "Import",
+        "moduleName": "WiseAISDK"
       },
       {
         "kind": "Import",
@@ -24627,434 +24903,504 @@
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 2788,
+      "offset": 3201,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 2813,
+      "offset": 3233,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 2870,
+      "offset": 3296,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 2895,
+      "offset": 3324,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 2963,
+      "offset": 4239,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 2990,
+      "offset": 4264,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 3054,
+      "offset": 4321,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 3738,
+      "offset": 4351,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 3763,
+      "offset": 4412,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 3902,
+      "offset": 4480,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 3929,
+      "offset": 4507,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 3992,
+      "offset": 4571,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 4705,
+      "offset": 5839,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 4776,
+      "offset": 5864,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 4801,
+      "offset": 6003,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 6030,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 6093,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 8542,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 8613,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 8638,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "StringLiteral",
-      "offset": 5538,
+      "offset": 9834,
       "length": 7,
       "value": "\"mykad\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 5570,
+      "offset": 9866,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 5625,
+      "offset": 9921,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 5652,
+      "offset": 9948,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 5711,
+      "offset": 10007,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 7391,
+      "offset": 12443,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 7415,
+      "offset": 12467,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 7485,
+      "offset": 12537,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 7512,
+      "offset": 12564,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 7578,
+      "offset": 12630,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 12115,
+      "offset": 19645,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 14979,
+      "offset": 22509,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 15003,
+      "offset": 22533,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 15064,
+      "offset": 22594,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 15091,
+      "offset": 22621,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 15148,
+      "offset": 22678,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 17325,
+      "offset": 24579,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 17350,
+      "offset": 24604,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 17408,
+      "offset": 24662,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 17433,
+      "offset": 24692,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 17502,
+      "offset": 24754,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 17529,
+      "offset": 24823,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 17594,
+      "offset": 24850,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 19720,
+      "offset": 24915,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 19745,
+      "offset": 26710,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 19886,
+      "offset": 26735,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 19913,
+      "offset": 26876,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 19977,
+      "offset": 26903,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 22651,
+      "offset": 26967,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 29322,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 29354,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 29418,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 29446,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
+      "kind": "BooleanLiteral",
+      "offset": 30769,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 22675,
+      "offset": 30793,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 22743,
+      "offset": 30861,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 22771,
+      "offset": 30889,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 24801,
+      "offset": 32767,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 24825,
+      "offset": 32791,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 24896,
+      "offset": 32862,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 24924,
+      "offset": 32890,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 26962,
+      "offset": 34773,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 26986,
+      "offset": 34797,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 27056,
+      "offset": 34867,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 27084,
+      "offset": 34895,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 29552,
+      "offset": 38142,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 29576,
+      "offset": 38166,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 29647,
+      "offset": 38237,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 29674,
+      "offset": 38264,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 29741,
+      "offset": 38331,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 31295,
+      "offset": 39761,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/WiseAiApp.swift",
       "kind": "BooleanLiteral",
-      "offset": 31368,
+      "offset": 39834,
       "length": 5,
       "value": "false"
     },
@@ -25390,49 +25736,49 @@
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/Logging.swift",
       "kind": "StringLiteral",
-      "offset": 346,
+      "offset": 562,
       "length": 16,
       "value": "\"passportReader\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/Logging.swift",
       "kind": "StringLiteral",
-      "offset": 455,
+      "offset": 657,
       "length": 11,
       "value": "\"tagReader\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/Logging.swift",
       "kind": "StringLiteral",
-      "offset": 570,
+      "offset": 753,
       "length": 17,
       "value": "\"secureMessaging\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/Logging.swift",
       "kind": "StringLiteral",
-      "offset": 654,
+      "offset": 847,
       "length": 9,
       "value": "\"openSSL\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/Logging.swift",
       "kind": "StringLiteral",
-      "offset": 726,
+      "offset": 929,
       "length": 5,
       "value": "\"BAC\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/Logging.swift",
       "kind": "StringLiteral",
-      "offset": 798,
+      "offset": 1012,
       "length": 20,
       "value": "\"chipAuthentication\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/Logging.swift",
       "kind": "StringLiteral",
-      "offset": 881,
+      "offset": 1106,
       "length": 6,
       "value": "\"PACE\""
     },
@@ -25446,184 +25792,443 @@
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 305,
+      "offset": 311,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 340,
+      "offset": 346,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "StringLiteral",
-      "offset": 411,
+      "offset": 417,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "StringLiteral",
-      "offset": 439,
+      "offset": 445,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 472,
+      "offset": 478,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "StringLiteral",
-      "offset": 512,
+      "offset": 518,
       "length": 7,
       "value": "\"mykad\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 542,
+      "offset": 548,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 836,
+      "length": 7,
+      "value": "\"FRONT\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 865,
+      "length": 6,
+      "value": "\"BACK\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 852,
+      "offset": 1043,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 891,
+      "offset": 1082,
       "length": 1,
       "value": "4"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "FloatLiteral",
-      "offset": 993,
+      "offset": 1184,
       "length": 3,
       "value": "1.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "Array",
-      "offset": 1149,
+      "offset": 1310,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 1226,
+      "offset": 1376,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1284,
+      "offset": 1434,
       "length": 25,
       "value": "\"com.wiseai.captureQueue\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 1368,
+      "offset": 1518,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 1408,
+      "offset": 1558,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 1448,
+      "offset": 1598,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1498,
+      "offset": 1649,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1581,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 1881,
+      "offset": 1984,
       "length": 28,
       "value": "\"com.wiseai.frameProcessing\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2256,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1958,
+      "offset": 2430,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 1995,
+      "offset": 2467,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
-      "kind": "StringLiteral",
-      "offset": 2400,
-      "length": 7,
-      "value": "\"FRONT\""
+      "kind": "FloatLiteral",
+      "offset": 5832,
+      "length": 4,
+      "value": "54.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 5839,
+      "length": 4,
+      "value": "85.6"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 5975,
+      "length": 5,
+      "value": "320.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 5982,
+      "length": 3,
+      "value": "1.4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 6118,
+      "length": 3,
+      "value": "5.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 6124,
+      "length": 5,
+      "value": "440.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 4342,
-      "length": 3,
-      "value": "320"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
-      "kind": "IntegerLiteral",
-      "offset": 4381,
-      "length": 3,
-      "value": "240"
+      "offset": 6601,
+      "length": 1,
+      "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "StringLiteral",
-      "offset": 7000,
+      "offset": 11748,
       "length": 7,
       "value": "\"frame\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 11808,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/HybridQualityViewController.swift",
       "kind": "Array",
-      "offset": 36980,
-      "length": 656,
-      "value": "[(\"no card\", \"NO_CARD\", \"No card detected \n\nEnsure card is fully visible \nAvoid glare & shadows\"), (\"no passport\", \"NO_CARD\", \"No card detected \n\nEnsure card is fully visible \nAvoid glare & shadows\"), (\"wrong id\", \"WRONG_ID\", \"Wrong ID detected \n\nPlease use the correct identification document\"), (\"wrong side\", \"WRONG_SIDE\", \"Wrong side detected \n\nFlip to show correct side of the ID\"), (\"hologram\", \"HOLOGRAM\", \"Hologram detected \n\nTry again with better lighting\"), (\"not clear\", \"BAD_QUALITY\", \"Image not clear \n\nTry again with clear & unobstructed view of the card\")]"
+      "offset": 35844,
+      "length": 359,
+      "value": "[(\"no card\", \"NO_CARD\", \"No card detected\"), (\"no passport\", \"NO_CARD\", \"No card detected\"), (\"wrong id\", \"WRONG_ID\", \"Wrong ID detected\"), (\"wrong side\", \"WRONG_SIDE\", \"Wrong side detected\"), (\"hologram\", \"HOLOGRAM\", \"Hologram detected\"), (\"not clear\", \"BAD_QUALITY\", \"Image not clear\")]"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1983,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2018,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 2082,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 2110,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 2648,
+      "length": 7,
+      "value": "\"FRONT\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2921,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2961,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 3298,
+      "length": 36,
+      "value": "\"com.wiseai.newMykadFrameProcessing\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3376,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3415,
+      "length": 1,
+      "value": "4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 3517,
+      "length": 3,
+      "value": "1.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "Array",
+      "offset": 3630,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3669,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3709,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3749,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3792,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 3845,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 4343,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5187,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 6672,
+      "length": 4,
+      "value": "85.6"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 6679,
+      "length": 4,
+      "value": "54.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 6917,
+      "length": 3,
+      "value": "560"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 6967,
+      "length": 4,
+      "value": "0.45"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 7016,
+      "length": 2,
+      "value": "10"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 7418,
+      "length": 4,
+      "value": "0.05"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 7655,
+      "length": 2,
+      "value": "16"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 7888,
+      "length": 1,
+      "value": "4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 7993,
+      "length": 2,
+      "value": "28"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 8043,
+      "length": 2,
+      "value": "24"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/MykadViewController.swift",
+      "kind": "Array",
+      "offset": 40613,
+      "length": 359,
+      "value": "[(\"no card\", \"NO_CARD\", \"No card detected\"), (\"no passport\", \"NO_CARD\", \"No card detected\"), (\"wrong id\", \"WRONG_ID\", \"Wrong ID detected\"), (\"wrong side\", \"WRONG_SIDE\", \"Wrong side detected\"), (\"hologram\", \"HOLOGRAM\", \"Hologram detected\"), (\"not clear\", \"BAD_QUALITY\", \"Image not clear\")]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/Models\/FaceImageInfo.swift",
@@ -26445,6 +27050,118 @@
       "value": "\"\""
     },
     {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 617,
+      "length": 7,
+      "value": "\"epass\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 655,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 1512,
+      "length": 3,
+      "value": "4.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 1518,
+      "length": 3,
+      "value": "3.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2989,
+      "length": 2,
+      "value": "20"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3037,
+      "length": 2,
+      "value": "70"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3087,
+      "length": 2,
+      "value": "30"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3158,
+      "length": 2,
+      "value": "10"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 3164,
+      "length": 5,
+      "value": "320.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 3171,
+      "length": 3,
+      "value": "1.4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3226,
+      "length": 1,
+      "value": "3"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 3230,
+      "length": 3,
+      "value": "5.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 3236,
+      "length": 5,
+      "value": "440.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3314,
+      "length": 1,
+      "value": "8"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 3318,
+      "length": 4,
+      "value": "12.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EPassViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 3325,
+      "length": 5,
+      "value": "440.0"
+    },
+    {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/NFCPassportReader\/OpenSSLUtils.swift",
       "kind": "BooleanLiteral",
       "offset": 243,
@@ -27252,112 +27969,161 @@
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1719,
+      "offset": 1778,
       "length": 23,
       "value": "\"com.wiseai.videoQueue\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1855,
+      "offset": 2512,
       "length": 28,
       "value": "\"com.wiseai.landmarkerQueue\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 2222,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
-      "kind": "IntegerLiteral",
-      "offset": 2819,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3010,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3046,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3156,
+      "offset": 2879,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "FloatLiteral",
-      "offset": 3209,
+      "offset": 3245,
+      "length": 3,
+      "value": "1.6"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 3290,
+      "length": 3,
+      "value": "6.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3424,
+      "length": 2,
+      "value": "36"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3474,
+      "length": 2,
+      "value": "18"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 4143,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 4327,
+      "length": 2,
+      "value": "10"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 4333,
+      "length": 5,
+      "value": "320.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 4340,
+      "length": 3,
+      "value": "1.4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 4536,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 4572,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 4682,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 4735,
       "length": 3,
       "value": "2.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 3264,
+      "offset": 4790,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "Array",
-      "offset": 3398,
+      "offset": 4924,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 3432,
+      "offset": 4958,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 3525,
+      "offset": 5060,
       "length": 2,
-      "value": "20"
+      "value": "30"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 3613,
+      "offset": 5148,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 3644,
+      "offset": 5179,
       "length": 1,
       "value": "3"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 3746,
+      "offset": 5281,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/ActiveLivenessViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 28553,
+      "offset": 36750,
       "length": 5,
       "value": "false"
     },
@@ -27791,21 +28557,28 @@
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportNFCViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 2561,
+      "offset": 2391,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportNFCViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 2625,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportNFCViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 2705,
+      "offset": 2769,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportNFCViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 2741,
+      "offset": 2805,
       "length": 1,
       "value": "5"
     },
@@ -27832,17 +28605,52 @@
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportOCRViewController.swift",
-      "kind": "IntegerLiteral",
-      "offset": 975,
+      "kind": "FloatLiteral",
+      "offset": 1812,
+      "length": 4,
+      "value": "54.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportOCRViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 1819,
+      "length": 4,
+      "value": "85.6"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportOCRViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 1883,
+      "length": 5,
+      "value": "320.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportOCRViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 1890,
       "length": 3,
-      "value": "320"
+      "value": "1.4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportOCRViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 1944,
+      "length": 3,
+      "value": "5.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportOCRViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 1950,
+      "length": 5,
+      "value": "440.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/PassportOCRViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 1022,
-      "length": 3,
-      "value": "240"
+      "offset": 2206,
+      "length": 1,
+      "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/Views\/FaceOverlay.swift",
@@ -27868,42 +28676,49 @@
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/DataService.swift",
       "kind": "BooleanLiteral",
-      "offset": 7057,
+      "offset": 7130,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/DataService.swift",
       "kind": "BooleanLiteral",
-      "offset": 13087,
+      "offset": 13147,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/DataService.swift",
+      "kind": "BooleanLiteral",
+      "offset": 24264,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/DataService.swift",
       "kind": "StringLiteral",
-      "offset": 38180,
+      "offset": 49357,
       "length": 7,
       "value": "\"FRONT\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/DataService.swift",
       "kind": "BooleanLiteral",
-      "offset": 38248,
+      "offset": 49425,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/DataService.swift",
       "kind": "BooleanLiteral",
-      "offset": 53982,
+      "offset": 65168,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/DataService.swift",
       "kind": "StringLiteral",
-      "offset": 61273,
+      "offset": 71733,
       "length": 46,
       "value": "\"jeiBvvpFhfs00Pg79ueZAo9qcpZcZtkY+ZUDiRsCoP8=\""
     },
@@ -27930,24 +28745,66 @@
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1681,
+      "kind": "FloatLiteral",
+      "offset": 2470,
+      "length": 5,
+      "value": "320.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2477,
       "length": 3,
-      "value": "320"
+      "value": "1.4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2531,
+      "length": 3,
+      "value": "5.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2537,
+      "length": 5,
+      "value": "440.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2669,
+      "length": 4,
+      "value": "12.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2676,
+      "length": 5,
+      "value": "440.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 1720,
-      "length": 3,
-      "value": "240"
+      "offset": 2787,
+      "length": 1,
+      "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
       "kind": "StringLiteral",
-      "offset": 4068,
+      "offset": 6704,
       "length": 7,
       "value": "\"frame\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/EKYCViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 6764,
+      "length": 5,
+      "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
@@ -28163,134 +29020,225 @@
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "FloatLiteral",
       "offset": 1726,
-      "length": 4,
-      "value": "0.02"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
-      "kind": "Array",
-      "offset": 1890,
-      "length": 2,
-      "value": "[]"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
-      "kind": "Array",
-      "offset": 1968,
-      "length": 2,
-      "value": "[]"
+      "length": 5,
+      "value": "0.015"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "IntegerLiteral",
-      "offset": 2008,
-      "length": 2,
-      "value": "10"
+      "offset": 2078,
+      "length": 1,
+      "value": "2"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2109,
+      "length": 1,
+      "value": "3"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "FloatLiteral",
-      "offset": 2064,
-      "length": 4,
-      "value": "0.25"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
-      "kind": "FloatLiteral",
-      "offset": 2121,
-      "length": 4,
-      "value": "0.25"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
-      "kind": "FloatLiteral",
-      "offset": 2177,
+      "offset": 2490,
       "length": 3,
-      "value": "1.5"
+      "value": "3.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "FloatLiteral",
-      "offset": 2231,
+      "offset": 2587,
+      "length": 3,
+      "value": "0.5"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2686,
+      "length": 1,
+      "value": "5"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "FloatLiteral",
+      "offset": 2796,
       "length": 3,
       "value": "2.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "IntegerLiteral",
-      "offset": 2272,
+      "offset": 2881,
+      "length": 2,
+      "value": "15"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "FloatLiteral",
+      "offset": 2982,
+      "length": 3,
+      "value": "0.8"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "FloatLiteral",
+      "offset": 3086,
+      "length": 4,
+      "value": "0.15"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3196,
+      "length": 1,
+      "value": "2"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "FloatLiteral",
+      "offset": 3328,
+      "length": 3,
+      "value": "2.5"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "Array",
+      "offset": 3524,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "Array",
+      "offset": 3602,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3642,
+      "length": 2,
+      "value": "10"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "FloatLiteral",
+      "offset": 3698,
+      "length": 4,
+      "value": "0.25"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "FloatLiteral",
+      "offset": 3755,
+      "length": 4,
+      "value": "0.25"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "FloatLiteral",
+      "offset": 3811,
+      "length": 3,
+      "value": "1.5"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "FloatLiteral",
+      "offset": 3865,
+      "length": 3,
+      "value": "2.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "IntegerLiteral",
+      "offset": 3906,
       "length": 1,
       "value": "3"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "Array",
-      "offset": 2379,
+      "offset": 4013,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "Array",
-      "offset": 2422,
+      "offset": 4056,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "Array",
-      "offset": 2469,
+      "offset": 4103,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "IntegerLiteral",
-      "offset": 2567,
+      "offset": 4201,
       "length": 1,
       "value": "5"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "IntegerLiteral",
-      "offset": 2612,
+      "offset": 4246,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "IntegerLiteral",
-      "offset": 2662,
+      "offset": 4296,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "IntegerLiteral",
-      "offset": 2706,
+      "offset": 4340,
       "length": 1,
       "value": "5"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "StringLiteral",
-      "offset": 2793,
+      "offset": 4427,
       "length": 39,
       "value": "\"com.facialgesturedetector.bufferqueue\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "BooleanLiteral",
-      "offset": 2918,
+      "offset": 4552,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
       "kind": "Array",
-      "offset": 8921,
+      "offset": 10555,
       "length": 2,
       "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "Array",
+      "offset": 17144,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ActiveFaceLiveness\/FacialGestureDetector.swift",
+      "kind": "IntegerLiteral",
+      "offset": 17199,
+      "length": 1,
+      "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/OtherEKYCViewController.swift",
@@ -28329,176 +29277,246 @@
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/OtherEKYCViewController.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1454,
+      "kind": "FloatLiteral",
+      "offset": 2262,
+      "length": 4,
+      "value": "54.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/OtherEKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2269,
+      "length": 4,
+      "value": "85.6"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/OtherEKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2333,
+      "length": 5,
+      "value": "320.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/OtherEKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2340,
       "length": 3,
-      "value": "320"
+      "value": "1.4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/OtherEKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2394,
+      "length": 3,
+      "value": "5.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/OtherEKYCViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 2400,
+      "length": 5,
+      "value": "440.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/OtherEKYCViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 1493,
-      "length": 3,
-      "value": "240"
+      "offset": 2656,
+      "length": 1,
+      "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 649,
+      "offset": 615,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 801,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1042,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "Array",
-      "offset": 1131,
+      "offset": 1257,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 1178,
+      "offset": 1304,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1577,
+      "offset": 1703,
       "length": 40,
       "value": "\"com.google.mediapipe.faceDetectorQueue\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 1732,
+      "offset": 1858,
       "length": 49,
       "value": "\"com.google.mediapipe.faceLandmarkerServiceQueue\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 2224,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 2540,
+      "offset": 2350,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 2581,
+      "offset": 2671,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 2666,
+      "offset": 2756,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "FloatLiteral",
-      "offset": 2751,
+      "offset": 2841,
       "length": 4,
       "value": "0.00"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 2869,
+      "offset": 3599,
       "length": 2,
-      "value": "15"
+      "value": "30"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 3045,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3082,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3125,
+      "offset": 3775,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 3178,
+      "offset": 3828,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 3236,
+      "offset": 3886,
       "length": 12,
       "value": "\"videoQueue\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 3372,
+      "offset": 4366,
       "length": 4,
       "value": "1280"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "IntegerLiteral",
-      "offset": 3407,
+      "offset": 4401,
       "length": 3,
       "value": "720"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 4665,
+      "length": 3,
+      "value": "1.6"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 4832,
+      "length": 2,
+      "value": "22"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 4882,
+      "length": 2,
+      "value": "18"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
+      "kind": "IntegerLiteral",
+      "offset": 5020,
+      "length": 2,
+      "value": "10"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 5026,
+      "length": 5,
+      "value": "320.0"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
+      "kind": "FloatLiteral",
+      "offset": 5033,
+      "length": 3,
+      "value": "1.4"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 3766,
+      "offset": 5251,
       "length": 17,
       "value": "\"yyyyMMdd_HHmmss\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 3894,
+      "offset": 5379,
       "length": 40,
       "value": "\"liveness_video_\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 3929,
+      "offset": 5414,
       "length": 1,
       "value": "\".mp4\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "StringLiteral",
-      "offset": 3985,
+      "offset": 5470,
       "length": 20,
       "value": "\"liveness_video.mp4\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/ViewController\/FaceLivenessViewController.swift",
       "kind": "FloatLiteral",
-      "offset": 15002,
+      "offset": 17453,
       "length": 3,
       "value": "2.0"
     },
@@ -28582,126 +29600,126 @@
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "FloatLiteral",
-      "offset": 2171,
+      "offset": 2175,
       "length": 3,
       "value": "1.3"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 9658,
+      "offset": 10197,
       "length": 1,
       "value": "7"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 9685,
+      "offset": 10224,
       "length": 66,
       "value": "\"FaceProcessor: Unexpected output size: \""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 9738,
+      "offset": 10277,
       "length": 1,
       "value": "\", expected 7\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 9835,
+      "offset": 10374,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 10012,
+      "offset": 10551,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 10102,
+      "offset": 10641,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 10255,
+      "offset": 10794,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 10364,
+      "offset": 10903,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "IntegerLiteral",
-      "offset": 10428,
+      "offset": 10967,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 10582,
+      "offset": 11121,
       "length": 6,
       "value": "\"%.3f\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 10614,
+      "offset": 11153,
       "length": 4,
       "value": "\", \""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 10638,
+      "offset": 11177,
       "length": 115,
       "value": "\"FaceProcessor: classId=\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 10672,
+      "offset": 11211,
       "length": 1,
       "value": "\" (\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 10689,
+      "offset": 11228,
       "length": 1,
       "value": "\") okScore=\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 10716,
+      "offset": 11255,
       "length": 6,
       "value": "\"%.3f\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 10733,
+      "offset": 11272,
       "length": 5,
       "value": "\" probs=[\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityFace\/FaceProcessor.swift",
       "kind": "StringLiteral",
-      "offset": 10751,
+      "offset": 11290,
       "length": 1,
       "value": "\"]\""
     },
@@ -28728,29 +29746,50 @@
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityDocument\/QualityOnnxModel.swift",
+      "kind": "StringLiteral",
+      "offset": 761,
+      "length": 26,
+      "value": "\"com.wiseai.onnxInference\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityDocument\/QualityOnnxModel.swift",
+      "kind": "BooleanLiteral",
+      "offset": 894,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityDocument\/QualityOnnxModel.swift",
       "kind": "Dictionary",
-      "offset": 494,
-      "length": 1443,
+      "offset": 936,
+      "length": 808,
       "value": "[(0, [\"noDocument\"]), (1, [\"mykad_front\", \"mys_tentera_front\", \"mys_pr_front\", \"mys_kas_front\"]), (2, [\"mys_dl_front\", \"phl_id_front\"]), (3, [\"mykad_back\", \"mys_tentera_back\", \"mys_pr_back\", \"mys_kas_back\"]), (4, [\"mys_dl_back\", \"phl_id_back\"]), (5, [\"sgp_emp_pass\", \"sgp_nric\", \"sgp_spass\", \"sgp_student\", \"sgp_wp\", \"sgp_longt_visit\", \"sgp_dpd\", \"sgp_11b\", \"sgp_overseas\", \"khm_id\", \"idn_id\", \"twn_id\", \"tha_id\", \"brn_id\"])]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityDocument\/QualityOnnxModel.swift",
       "kind": "Dictionary",
-      "offset": 1978,
+      "offset": 1785,
       "length": 590,
       "value": "[(0, \"Front card detected.\"), (1, \"No card detected \n\nEnsure card is fully visible \nAvoid glare & shadows\"), (2, \"Back card detected.\"), (3, \"Document detected.\"), (4, \"Others document detected.\"), (5, \"Image not clear \n\nTry again with clear & unobstructed view of the card\"), (6, \"Good image quality detected.\"), (7, \"Hologram detected \n\nTry again with better lighting\"), (8, \"Wrong ID detected \n\nPlease use the correct identification document\"), (9, \"Wrong side detected \n\nFlip to show correct side of the ID\")]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityDocument\/QualityOnnxModel.swift",
+      "kind": "StringLiteral",
+      "offset": 2490,
+      "length": 45,
+      "value": "\"MobileVit_300_20250604_best_overall_f1_fp16\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityDocument\/QualityOnnxModel.swift",
       "kind": "FloatLiteral",
-      "offset": 20280,
+      "offset": 22665,
       "length": 3,
       "value": "0.0"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/QualityDocument\/QualityOnnxModel.swift",
       "kind": "IntegerLiteral",
-      "offset": 20359,
+      "offset": 22744,
       "length": 1,
       "value": "0"
     },
@@ -28806,142 +29845,247 @@
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 468,
+      "offset": 469,
+      "length": 20,
+      "value": "\"ekyc\/id\/mykad_2026\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
+      "kind": "StringLiteral",
+      "offset": 510,
       "length": 10,
       "value": "\"ekyc\/id\/\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 504,
+      "offset": 546,
       "length": 17,
       "value": "\"ekyc\/ocr\/id-ocr\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 544,
+      "offset": 586,
       "length": 19,
       "value": "\"ekyc\/ocr\/passport\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 590,
+      "offset": 632,
       "length": 31,
       "value": "\"ekyc\/nfc\/update_passport_info\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 648,
+      "offset": 690,
       "length": 17,
       "value": "\"ekyc\/face\/video\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 692,
+      "offset": 734,
       "length": 29,
       "value": "\"ekyc\/face-verify\/face\/video\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 773,
+      "offset": 815,
       "length": 19,
       "value": "\"ekyc\/ocr-only\/id\/\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 818,
+      "offset": 860,
       "length": 21,
       "value": "\"ekyc\/ocr-only\/mykad\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 868,
+      "offset": 910,
       "length": 24,
       "value": "\"ekyc\/ocr-only\/passport\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "BooleanLiteral",
-      "offset": 922,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
-      "kind": "StringLiteral",
-      "offset": 1008,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
-      "kind": "StringLiteral",
-      "offset": 1041,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
-      "kind": "BooleanLiteral",
-      "offset": 1131,
+      "offset": 964,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "BooleanLiteral",
-      "offset": 1166,
+      "offset": 1263,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "BooleanLiteral",
-      "offset": 1205,
+      "offset": 2194,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "BooleanLiteral",
-      "offset": 1280,
+      "offset": 2269,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "Dictionary",
-      "offset": 1384,
+      "offset": 2373,
       "length": 3,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "Dictionary",
-      "offset": 1937,
+      "offset": 2427,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
+      "kind": "Dictionary",
+      "offset": 2498,
       "length": 3,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 2046,
+      "offset": 2536,
+      "length": 4,
+      "value": "\"EN\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
+      "kind": "Dictionary",
+      "offset": 3421,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
+      "kind": "StringLiteral",
+      "offset": 3933,
       "length": 7,
       "value": "\"mykad\""
     },
     {
       "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Assets.swift",
       "kind": "StringLiteral",
-      "offset": 31523,
+      "offset": 37222,
       "length": 2,
       "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/DebugLog.swift",
+      "kind": "StringLiteral",
+      "offset": 707,
+      "length": 3,
+      "value": "\" \""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/DebugLog.swift",
+      "kind": "StringLiteral",
+      "offset": 733,
+      "length": 4,
+      "value": "\"\n\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 629,
+      "length": 6,
+      "value": "\"EKYC\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 660,
+      "length": 11,
+      "value": "\"NEW_MYKAD\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 696,
+      "length": 10,
+      "value": "\"PASSPORT\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 730,
+      "length": 10,
+      "value": "\"OTHER_ID\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 764,
+      "length": 10,
+      "value": "\"OCR_ONLY\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 802,
+      "length": 14,
+      "value": "\"DOCUMENT_OCR\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 843,
+      "length": 13,
+      "value": "\"GENERAL_OCR\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 883,
+      "length": 13,
+      "value": "\"FACE_VERIFY\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 1104,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "StringLiteral",
+      "offset": 1132,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1222,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/WiseAI\/SDK\/saas_ekyc_sdk\/WiseAISDK\/Util\/SdkConfig.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1316,
+      "length": 5,
+      "value": "false"
     },
     {
       "filePath": "\/Users\/jingkaitoh\/Library\/Developer\/Xcode\/DerivedData\/WiseAISDK-hehjuqgrqqhfcveelfvhxxdtmshh\/Build\/Intermediates.noindex\/WiseAISDK.build\/Release-iphoneos\/WiseAISDK.build\/DerivedSources\/GeneratedAssetSymbols.swift",
@@ -28956,6 +30100,20 @@
       "offset": 875,
       "length": 13,
       "value": "\"front_frame\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/Library\/Developer\/Xcode\/DerivedData\/WiseAISDK-hehjuqgrqqhfcveelfvhxxdtmshh\/Build\/Intermediates.noindex\/WiseAISDK.build\/Release-iphoneos\/WiseAISDK.build\/DerivedSources\/GeneratedAssetSymbols.swift",
+      "kind": "StringLiteral",
+      "offset": 1024,
+      "length": 16,
+      "value": "\"new_back_frame\""
+    },
+    {
+      "filePath": "\/Users\/jingkaitoh\/Library\/Developer\/Xcode\/DerivedData\/WiseAISDK-hehjuqgrqqhfcveelfvhxxdtmshh\/Build\/Intermediates.noindex\/WiseAISDK.build\/Release-iphoneos\/WiseAISDK.build\/DerivedSources\/GeneratedAssetSymbols.swift",
+      "kind": "StringLiteral",
+      "offset": 1178,
+      "length": 17,
+      "value": "\"new_front_frame\""
     }
   ]
 }

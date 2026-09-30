@@ -47,9 +47,9 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
     }
   }
 
@@ -79,8 +79,9 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
               isEncrypt: false,
             )
           : IosFaceVerifyConfig(
-              apiToken: "YOUR_API_TOKEN",
-              apiURL: "YOUR_API_URL",
+              apiToken:
+                  "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ3aXNlYWkiLCJzdWIiOiJ3aXNlYWktYXBpIiwiaWQiOiIzNzIiLCJubSI6Ik15S2FkIGVLWUMiLCJtaXNjIjoiIiwidmVyIjozfQ.fVufFcKGWzfrpIz2QJZMIQ0qXqwlw_IjJpnYz5c4jkU",
+              apiURL: "https://wiseconsole-demo.wiseai.tech/",
               faceImageBytes: imageBytes,
               language: widget.language,
               isExportFace: false,
@@ -115,10 +116,16 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Session ID:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Session ID:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Text(result.sessionId.isEmpty ? 'N/A' : result.sessionId),
             const SizedBox(height: 10),
-            const Text('Status:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Status:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Text(result.status.name.toUpperCase()),
           ],
         ),
@@ -140,14 +147,22 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
   }
 
   Widget _buildImageSection(String? base64Image, String label) {
-    if (base64Image == null || base64Image.isEmpty) return const SizedBox.shrink();
+    if (base64Image == null || base64Image.isEmpty)
+      return const SizedBox.shrink();
     try {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 10),
-          Image.memory(base64Decode(base64Image), height: 200, fit: BoxFit.contain),
+          Image.memory(
+            base64Decode(base64Image),
+            height: 200,
+            fit: BoxFit.contain,
+          ),
           const SizedBox(height: 20),
         ],
       );
@@ -160,7 +175,11 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
     if (value == null) return const SizedBox.shrink();
 
     final String displayValue = value is List
-        ? value.whereType<Object>().map((e) => e.toString()).where((s) => s.isNotEmpty).join(', ')
+        ? value
+              .whereType<Object>()
+              .map((e) => e.toString())
+              .where((s) => s.isNotEmpty)
+              .join(', ')
         : value.toString();
 
     if (displayValue.isEmpty) return const SizedBox.shrink();
@@ -172,15 +191,25 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
         children: [
           SizedBox(
             width: 180,
-            child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
-          Expanded(child: Text(displayValue, style: const TextStyle(fontSize: 16))),
+          Expanded(
+            child: Text(displayValue, style: const TextStyle(fontSize: 16)),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildErrorView(EkycResult result, {required IconData icon, required Color color, required String title}) {
+  Widget _buildErrorView(
+    EkycResult result, {
+    required IconData icon,
+    required Color color,
+    required String title,
+  }) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -189,19 +218,33 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
           children: [
             Icon(icon, size: 64, color: color),
             const SizedBox(height: 20),
-            Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             if (result.errorCode != null)
-              Text('Error Code: ${result.errorCode}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(
+                'Error Code: ${result.errorCode}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             if (result.errorMessage != null) ...[
               const SizedBox(height: 8),
-              Text(result.errorMessage!, style: const TextStyle(fontSize: 16), textAlign: TextAlign.center),
+              Text(
+                result.errorMessage!,
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
             ],
             if (result.sessionId.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text('Session ID: ${result.sessionId}',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+              Text(
+                'Session ID: ${result.sessionId}',
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              ),
             ],
             const SizedBox(height: 24),
             ElevatedButton(
@@ -226,8 +269,10 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (_selectedImage != null) ...[
-              const Text('Selected Image',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text(
+                'Selected Image',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 20),
               Container(
                 height: 300,
@@ -246,9 +291,14 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
             ElevatedButton.icon(
               onPressed: _pickImage,
               icon: const Icon(Icons.image),
-              label: Text(_selectedImage == null ? 'Select Image' : 'Change Image'),
+              label: Text(
+                _selectedImage == null ? 'Select Image' : 'Change Image',
+              ),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 15,
+                ),
               ),
             ),
             if (_selectedImage != null) ...[
@@ -259,7 +309,10 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
                 label: const Text('Start Face Verify'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                    vertical: 15,
+                  ),
                 ),
               ),
             ],
@@ -275,7 +328,10 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 20),
-            Text('Processing Face Verification...', style: TextStyle(fontSize: 18)),
+            Text(
+              'Processing Face Verification...',
+              style: TextStyle(fontSize: 18),
+            ),
           ],
         ),
       );
@@ -286,11 +342,19 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
 
     switch (result.status) {
       case EkycStatus.sdkError:
-        return _buildErrorView(result,
-            icon: Icons.error_outline, color: Colors.red, title: 'Face Verify Error');
+        return _buildErrorView(
+          result,
+          icon: Icons.error_outline,
+          color: Colors.red,
+          title: 'Face Verify Error',
+        );
       case EkycStatus.bridgeError:
-        return _buildErrorView(result,
-            icon: Icons.warning_amber, color: Colors.red, title: 'Bridge Error');
+        return _buildErrorView(
+          result,
+          icon: Icons.warning_amber,
+          color: Colors.red,
+          title: 'Bridge Error',
+        );
       case EkycStatus.cancelled:
         return Center(
           child: Column(
@@ -298,8 +362,10 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
             children: [
               const Icon(Icons.cancel_outlined, size: 64, color: Colors.orange),
               const SizedBox(height: 20),
-              const Text('Face Verify Cancelled',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text(
+                'Face Verify Cancelled',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
@@ -328,8 +394,10 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_selectedImage != null) ...[
-            const Text('Selected Reference Image',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Selected Reference Image',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 10),
             Container(
               height: 200,
@@ -347,10 +415,15 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
           ],
 
           if (faceData?['faceImageBase64'] != null)
-            _buildImageSection(faceData!['faceImageBase64'], 'Captured Face Image'),
+            _buildImageSection(
+              faceData!['faceImageBase64'],
+              'Captured Face Image',
+            ),
 
-          const Text('Face Verification Results',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          const Text(
+            'Face Verification Results',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 10),
           const Divider(),
 
@@ -358,12 +431,20 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
           _buildInfoRow('Status', result.status.name.toUpperCase()),
 
           if (faceData != null) ...[
-            _buildInfoRow('Face Verify Session ID', faceData['faceVerifySessionId']),
-            _buildInfoRow('Liveness Detected', faceData['livenessDetected']?.toString()),
+            _buildInfoRow(
+              'Face Verify Session ID',
+              faceData['faceVerifySessionId'],
+            ),
+            _buildInfoRow(
+              'Liveness Detected',
+              faceData['livenessDetected']?.toString(),
+            ),
             _buildInfoRow('Face Match', faceData['faceIsMatch']?.toString()),
             if (faceData['confidence'] != null)
-              _buildInfoRow('Face Matching Score',
-                  '${(faceData['confidence'] as num).toStringAsFixed(2)}%'),
+              _buildInfoRow(
+                'Face Matching Score',
+                '${(faceData['confidence'] as num).toStringAsFixed(2)}%',
+              ),
             _buildInfoRow('Nonce', faceData['nonce']),
             _buildInfoRow('URL', faceData['url']),
           ],
@@ -371,8 +452,10 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
           const SizedBox(height: 30),
 
           ExpansionTile(
-            title: const Text('Raw JSON Response',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            title: const Text(
+              'Raw JSON Response',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             children: [
               Container(
                 width: double.infinity,
@@ -396,10 +479,13 @@ class _FaceVerifyResultPageState extends State<FaceVerifyResultPage> {
                   _selectedImage = null;
                 });
               },
-              child: const Text('Try Again'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 15,
+                ),
               ),
+              child: const Text('Try Again'),
             ),
           ),
         ],
